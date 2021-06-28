@@ -115,6 +115,34 @@ class Elf64_Phdr(Structure, NiceHexFieldRepr):
                 ("p_align", elf64_xword)]
 
 
+class Elf32_Sym(Structure, NiceHexFieldRepr):
+    _fields_ = [("st_name", elf32_word),
+                ("st_value", elf32_addr),
+                ("st_size", elf32_word),
+                ("st_info", c_ubyte),
+                ("st_other", c_ubyte),
+                ("st_shndx", elf32_section)]
+
+
+class Elf64_Sym(Structure, NiceHexFieldRepr):
+    _fields_ = [("st_name", elf64_word),
+                ("st_info", c_ubyte),
+                ("st_other", c_ubyte),
+                ("st_shndx", elf64_section),
+                ("st_value", elf64_addr),
+                ("st_size", elf64_xword)]
+
+
+class Elf32_Syminfo(Structure, NiceHexFieldRepr):
+    _fields_ = [("si_boundto", elf32_half),
+                ("si_flags", elf32_half)]
+
+
+class Elf64_Syminfo(Structure, NiceHexFieldRepr):
+    _fields_ = [("si_boundto", elf64_half),
+                ("si_flags", elf64_half)]
+
+
 class Elf32_Rel(Structure, NiceHexFieldRepr):
     _fields_ = [("r_offset", elf32_addr),
                 ("r_info", elf32_word)]
