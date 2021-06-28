@@ -15,6 +15,7 @@ def instantiate_ctype_with_backing(classtype, backing=None):
         if len(backing) != sizeof(classtype):
             raise Exception("Provided backing and classtype have different sizes")
     ptr = cast(backing, POINTER(classtype))
+    ptr.contents._elfparser_backing = backing
 
     return backing, ptr.contents
 
@@ -26,10 +27,3 @@ def set_backing_value(backing, value):
 def set_backing_value_from_elf_offset(backing, elf, offset):
     set_backing_value(backing, elf[offset:offset + len(backing)])
 
-
-# from .elfstructs import Elf32_Shdr, Elf64_Shdr, Elf32_Ehdr, Elf64_Ehdr
-# from .elfstructs import Elf32_Phdr, Elf64_Phdr, Elf32_Rel, Elf64_Rel
-# from .elfstructs import Elf32_Rela, Elf64_Rela, Elf32_Dyn, Elf64_Dyn
-# from .elfstructs import Elf32_Move, Elf64_Move, Elf32_Lib, Elf64_Lib, Elf32_Verdef, Elf64_Verdef, Elf32_Verdaux, Elf64_Verdaux, Elf32_Verneed, Elf64_Verneed, Elf32_Vernaux, Elf64_Vernaux, Elf32_aux_t, Elf64_aux_t, Elf32_Nhdr, Elf64_Nhdr
-# from .elfstructs import elf32_half, elf32_word, elf32_sword, elf32_xword, elf32_sxword, elf32_addr, elf32_off, elf32_section, elf32_versym
-# from .elfstructs import elf64_half, elf64_word, elf64_sword, elf64_xword, elf64_sxword, elf64_addr, elf64_off, elf64_section, elf64_versym
