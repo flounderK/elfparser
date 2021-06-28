@@ -3,6 +3,7 @@
 from ctypes import ARRAY, sizeof, POINTER, cast, c_ubyte
 from . import elfmacros
 from . import elfstructs
+from . import elfenums
 
 
 def instantiate_ctype_with_backing(classtype, backing=None):
@@ -21,6 +22,9 @@ def instantiate_ctype_with_backing(classtype, backing=None):
 def set_backing_value(backing, value):
     backing[:] = value
 
+
+def set_backing_value_from_elf_offset(backing, elf, offset):
+    set_backing_value(backing, elf[offset:offset + len(backing)])
 
 
 # from .elfstructs import Elf32_Shdr, Elf64_Shdr, Elf32_Ehdr, Elf64_Ehdr
