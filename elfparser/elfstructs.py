@@ -32,8 +32,10 @@ class NiceHexFieldRepr:
                           else ("%s: %s" % (k, bytes(getattr(self, k))))
                           for k, v in self._fields_])
 
-class CtypesCopyConstructor:
+
+class CtypesByteLevelManipulation:
     def copy(self):
+        """Byte level copy constructor"""
         sizeof_self = sizeof(self)
         new_backing_class = (c_ubyte * sizeof_self)
         new_backing = new_backing_class.from_buffer_copy(self)
@@ -42,12 +44,20 @@ class CtypesCopyConstructor:
         new_instance_ptr.contents._elfparser_backing = new_backing
         return new_instance_ptr.contents
 
+    def write_into(self, bytevals):
+        """Copy byte values from bytevals into the current backing of
+        the object"""
+        mutable_bytevals = bytearray(bytevals)
+        sizeof_self = sizeof(self)
+        backing_class = (c_ubyte * sizeof_self)
+        # backing = backing_class.from_buffer(self)
+
+        # temporary backing that will hold the values c
+        temp_backing = backing_class.from_buffer(mutable_bytevals)
+        memmove(byref(self), temp_backing, sizeof_self)
 
 
-
-
-
-class Elf32_Shdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Shdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("sh_name", elf32_word),
                 ("sh_type", elf32_word),
                 ("sh_flags", elf32_word),
@@ -60,7 +70,7 @@ class Elf32_Shdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("sh_entsize", elf32_word)]
 
 
-class Elf64_Shdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Shdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("sh_name", elf64_word),
                 ("sh_type", elf64_word),
                 ("sh_flags", elf64_xword),
@@ -73,7 +83,7 @@ class Elf64_Shdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("sh_entsize", elf64_xword)]
 
 
-class Elf32_Ehdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Ehdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("e_ident", c_ubyte*elfmacros.EI_NIDENT),
                 ("e_type", elf32_half),
                 ("e_machine", elf32_half),
@@ -90,7 +100,7 @@ class Elf32_Ehdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("e_shstrndx", elf32_half)]
 
 
-class Elf64_Ehdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Ehdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("e_ident", c_ubyte*elfmacros.EI_NIDENT),
                 ("e_type", elf64_half),
                 ("e_machine", elf64_half),
@@ -107,7 +117,7 @@ class Elf64_Ehdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("e_shstrndx", elf64_half)]
 
 
-class Elf32_Phdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Phdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("p_type", elf32_word),
                 ("p_offset", elf32_off),
                 ("p_vaddr", elf32_addr),
@@ -118,7 +128,7 @@ class Elf32_Phdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("p_align", elf32_word)]
 
 
-class Elf64_Phdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Phdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("p_type", elf64_word),
                 ("p_flags", elf64_word),
                 ("p_offset", elf64_off),
@@ -129,7 +139,7 @@ class Elf64_Phdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("p_align", elf64_xword)]
 
 
-class Elf32_Sym(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Sym(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("st_name", elf32_word),
                 ("st_value", elf32_addr),
                 ("st_size", elf32_word),
@@ -138,7 +148,7 @@ class Elf32_Sym(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("st_shndx", elf32_section)]
 
 
-class Elf64_Sym(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Sym(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("st_name", elf64_word),
                 ("st_info", c_ubyte),
                 ("st_other", c_ubyte),
@@ -147,39 +157,39 @@ class Elf64_Sym(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("st_size", elf64_xword)]
 
 
-class Elf32_Syminfo(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Syminfo(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("si_boundto", elf32_half),
                 ("si_flags", elf32_half)]
 
 
-class Elf64_Syminfo(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Syminfo(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("si_boundto", elf64_half),
                 ("si_flags", elf64_half)]
 
 
-class Elf32_Rel(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Rel(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("r_offset", elf32_addr),
                 ("r_info", elf32_word)]
 
 
-class Elf64_Rel(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Rel(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("r_offset", elf64_addr),
                 ("r_info", elf64_xword)]
 
 
-class Elf32_Rela(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Rela(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("r_offset", elf32_addr),
                 ("r_info", elf32_word),
                 ("r_addend", elf32_sword)]
 
 
-class Elf64_Rela(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Rela(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("r_offset", elf64_addr),
                 ("r_info", elf64_xword),
                 ("r_addend", elf64_sxword)]
 
 
-class Elf32_Dyn(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Dyn(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     class _Elf32_Dyn_d_un(Union):
         _fields_ = [("d_val", elf32_word),
                     ("d_ptr", elf32_addr)]
@@ -187,7 +197,7 @@ class Elf32_Dyn(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("d_un", _Elf32_Dyn_d_un)]
 
 
-class Elf64_Dyn(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Dyn(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     class _Elf64_Dyn_d_un(Union):
         _fields_ = [("d_val", elf64_xword),
                     ("d_ptr", elf64_addr)]
@@ -195,7 +205,7 @@ class Elf64_Dyn(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("d_un", _Elf64_Dyn_d_un)]
 
 
-class Elf32_Move(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Move(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("m_value", elf32_xword),
                 ("m_info", elf32_word),
                 ("m_poffset", elf32_word),
@@ -203,7 +213,7 @@ class Elf32_Move(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("m_stride", elf32_half)]
 
 
-class Elf64_Move(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Move(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("m_value", elf64_xword),
                 ("m_info", elf64_xword),
                 ("m_poffset", elf64_xword),
@@ -211,7 +221,7 @@ class Elf64_Move(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("m_stride", elf64_half)]
 
 
-class Elf32_Lib(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Lib(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("l_name", elf32_word),
                 ("l_time_stamp", elf32_word),
                 ("l_checksum", elf32_word),
@@ -219,7 +229,7 @@ class Elf32_Lib(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("l_flags", elf32_word)]
 
 
-class Elf64_Lib(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Lib(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("l_name", elf64_word),
                 ("l_time_stamp", elf64_word),
                 ("l_checksum", elf64_word),
@@ -227,7 +237,7 @@ class Elf64_Lib(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("l_flags", elf64_word)]
 
 
-class Elf32_Verdef(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Verdef(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vd_version", elf32_half),
                 ("vd_flags", elf32_half),
                 ("vd_ndx", elf32_half),
@@ -237,7 +247,7 @@ class Elf32_Verdef(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("vd_next", elf32_word)]
 
 
-class Elf64_Verdef(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Verdef(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vd_version", elf64_half),
                 ("vd_flags", elf64_half),
                 ("vd_ndx", elf64_half),
@@ -247,17 +257,17 @@ class Elf64_Verdef(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("vd_next", elf64_word)]
 
 
-class Elf32_Verdaux(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Verdaux(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vda_name", elf32_word),
                 ("vda_next", elf32_word)]
 
 
-class Elf64_Verdaux(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Verdaux(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vda_name", elf64_word),
                 ("vda_next", elf64_word)]
 
 
-class Elf32_Verneed(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Verneed(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vn_version", elf32_half),
                 ("vn_cnt", elf32_half),
                 ("vn_file", elf32_word),
@@ -265,7 +275,7 @@ class Elf32_Verneed(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("vn_next", elf32_word)]
 
 
-class Elf64_Verneed(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Verneed(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vn_version", elf64_half),
                 ("vn_cnt", elf64_half),
                 ("vn_file", elf64_word),
@@ -273,7 +283,7 @@ class Elf64_Verneed(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("vn_next", elf64_word)]
 
 
-class Elf32_Vernaux(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Vernaux(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vna_hash", elf32_word),
                 ("vna_flags", elf32_half),
                 ("vna_other", elf32_half),
@@ -281,7 +291,7 @@ class Elf32_Vernaux(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("vna_next", elf32_word)]
 
 
-class Elf64_Vernaux(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Vernaux(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("vna_hash", elf64_word),
                 ("vna_flags", elf64_half),
                 ("vna_other", elf64_half),
@@ -289,27 +299,27 @@ class Elf64_Vernaux(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
                 ("vna_next", elf64_word)]
 
 
-class Elf32_aux_t(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_aux_t(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     class _Elf32_aux_t_a_un(Union):
         _fields_ = [("a_val", c_uint32)]
     _fields_ = [("a_type", c_uint32),
                 ("a_un", _Elf32_aux_t_a_un)]
 
 
-class Elf64_aux_t(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_aux_t(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     class _Elf64_aux_t_a_un(Union):
         _fields_ = [("a_val", c_uint64)]
     _fields_ = [("a_type", c_uint64),
                 ("a_un", _Elf64_aux_t_a_un)]
 
 
-class Elf32_Nhdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf32_Nhdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("n_namesz", elf32_word),
                 ("n_descsz", elf32_word),
                 ("n_type", elf32_word)]
 
 
-class Elf64_Nhdr(Structure, NiceHexFieldRepr, CtypesCopyConstructor):
+class Elf64_Nhdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("n_namesz", elf64_word),
                 ("n_descsz", elf64_word),
                 ("n_type", elf64_word)]
