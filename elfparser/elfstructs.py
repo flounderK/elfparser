@@ -56,6 +56,10 @@ class CtypesByteLevelManipulation:
         temp_backing = backing_class.from_buffer(mutable_bytevals)
         memmove(byref(self), temp_backing, sizeof_self)
 
+    def __iter__(self):
+        for k, v in self._fields_:
+            yield (k, getattr(self, k))
+
 
 class Elf32_Shdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("sh_name", elf32_word),
