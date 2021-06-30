@@ -47,7 +47,7 @@ class AT(enum.IntEnum):
     AT_UID = 0xb
 
 
-class DF(enum.IntEnum):
+class DF(enum.IntFlag):
     DF_1_CONFALT = 0x2000
     DF_1_DIRECT = 0x100
     DF_1_DISPRELDNE = 0x8000
@@ -914,7 +914,7 @@ class PT(enum.IntEnum):
     PT_TLS = 0x7
 
 
-class RHF(enum.IntEnum):
+class RHF(enum.IntFlag):
     RHF_CORD = 0x1000
     RHF_DEFAULT_DELAY_LOAD = 0x200
     RHF_DELTA_C_PLUS_PLUS = 0x40
@@ -2636,7 +2636,7 @@ class R(enum.IntEnum):
     R_X86_64_TPOFF64 = 0x12
 
 
-class SHF(enum.IntEnum):
+class SHF(enum.IntFlag):
     SHF_ALLOC = 0x2
     SHF_ALPHA_GPREL = 0x10000000
     SHF_ARM_COMDEF = 0x80000000
@@ -2837,7 +2837,7 @@ class STT(enum.IntEnum):
     STT_TLS = 0x6
 
 
-class STV(enum.IntEnum):
+class STV(enum.IntFlag):
     STV_DEFAULT = 0x0
     STV_HIDDEN = 0x2
     STV_INTERNAL = 0x1
@@ -2849,12 +2849,15 @@ class SYMINFO(enum.IntEnum):
     SYMINFO_BT_PARENT = 0xfffe
     SYMINFO_BT_SELF = 0xffff
     SYMINFO_CURRENT = 0x1
+    SYMINFO_NONE = 0x0
+    SYMINFO_NUM = 0x2
+
+
+class SYMINFO_FLG(enum.IntFlag):
     SYMINFO_FLG_COPY = 0x4
     SYMINFO_FLG_DIRECT = 0x1
     SYMINFO_FLG_LAZYLOAD = 0x8
     SYMINFO_FLG_PASSTHRU = 0x2
-    SYMINFO_NONE = 0x0
-    SYMINFO_NUM = 0x2
 
 
 class VER(enum.IntEnum):
