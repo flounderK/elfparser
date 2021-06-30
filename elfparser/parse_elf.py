@@ -3,6 +3,7 @@
 from . import instantiate_ctype_with_backing, set_backing_value, set_backing_value_from_elf_offset
 from . import elfstructs
 from . import elfenums
+from . import elfmacros
 from ctypes import c_ubyte, sizeof, addressof, cast, POINTER, create_string_buffer, string_at
 import _ctypes
 
@@ -59,6 +60,9 @@ symtab_shdr = [i for i in shdr_array if i.sh_type == elfenums.SHT.SHT_SYMTAB][0]
 
 sym_array_class = elfstructs.Elf64_Sym * (symtab_shdr.sh_size // sizeof(elfstructs.Elf64_Sym))
 sym_array = sym_array_class.from_buffer(elf_array, symtab_shdr.sh_offset)
+
+# decode sym type
+[elfenums.STT(elfmacros.ELF64_ST_TYPE(i.st_info)) for i in sym_array]
 
 # sym_backing, sym = instantiate_ctype_with_backing(elfstructs.Elf64_Sym)
 
