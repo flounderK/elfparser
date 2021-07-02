@@ -41,6 +41,17 @@ class CtypesByteLevelManipulation:
             yield (k, getattr(self, k))
 
 
+class Elf_Ident(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    _fields_ = [("ei_elfmag", c_ubyte*4),
+                ("ei_class", c_ubyte),
+                ("ei_data", c_ubyte),
+                ("ei_version", c_ubyte),
+                ("ei_osabi", c_ubyte),
+                ("ei_abiversion", c_ubyte),
+                ("ei_pad", c_ubyte*7)]
+
+
+
 class Elf32_Shdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("sh_name", elf32_word),
                 ("sh_type", elf32_word),
@@ -68,7 +79,7 @@ class Elf64_Shdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
 
 
 class Elf32_Ehdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
-    _fields_ = [("e_ident", c_ubyte*elfmacros.EI_NIDENT),
+    _fields_ = [("e_ident", Elf_Ident),
                 ("e_type", elf32_half),
                 ("e_machine", elf32_half),
                 ("e_version", elf32_word),
@@ -85,7 +96,7 @@ class Elf32_Ehdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
 
 
 class Elf64_Ehdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
-    _fields_ = [("e_ident", c_ubyte*elfmacros.EI_NIDENT),
+    _fields_ = [("e_ident", Elf_Ident),
                 ("e_type", elf64_half),
                 ("e_machine", elf64_half),
                 ("e_version", elf64_word),
