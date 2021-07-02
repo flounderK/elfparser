@@ -1,6 +1,20 @@
 import enum
 
 
+class ELFCLASS(enum.IntEnum):
+    ELFCLASSNONE = 0x0
+    ELFCLASS32 = 0x1
+    ELFCLASS64 = 0x2
+    ELFCLASSNUM = 0x3
+
+
+class ELFDATA(enum.IntEnum):
+    ELFDATANONE = 0x0
+    ELFDATA2LSB = 0x1
+    ELFDATA2MSB = 0x2
+    ELFDATANUM = 0x3
+
+
 class AT(enum.IntEnum):
     AT_BASE = 0x7
     AT_BASE_PLATFORM = 0x18
