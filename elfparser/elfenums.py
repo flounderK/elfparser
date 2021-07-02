@@ -850,7 +850,7 @@ class OPAD(enum.IntEnum):
     OPAD_SYMBOL = 0x4
 
 
-class PF(enum.IntEnum):
+class PF(enum.IntFlag):
     PF_ARM_ABS = 0x40000000
     PF_ARM_PI = 0x20000000
     PF_ARM_SB = 0x10000000
@@ -955,7 +955,7 @@ class RHF(enum.IntFlag):
     RHF_SGI_ONLY = 0x10
 
 
-class R(enum.IntEnum):
+class R_386(enum.IntEnum):
     R_386_16 = 0x14
     R_386_32 = 0x1
     R_386_32PLT = 0xb
@@ -999,6 +999,9 @@ class R(enum.IntEnum):
     R_386_TLS_LE_32 = 0x22
     R_386_TLS_TPOFF = 0xe
     R_386_TLS_TPOFF32 = 0x25
+
+
+class R_390(enum.IntEnum):
     R_390_12 = 0x2
     R_390_16 = 0x3
     R_390_20 = 0x39
@@ -1062,6 +1065,9 @@ class R(enum.IntEnum):
     R_390_TLS_LE64 = 0x33
     R_390_TLS_LOAD = 0x25
     R_390_TLS_TPOFF = 0x38
+
+
+class R_68K(enum.IntEnum):
     R_68K_16 = 0x2
     R_68K_32 = 0x1
     R_68K_8 = 0x3
@@ -1104,6 +1110,9 @@ class R(enum.IntEnum):
     R_68K_TLS_LE32 = 0x25
     R_68K_TLS_LE8 = 0x27
     R_68K_TLS_TPREL32 = 0x2a
+
+
+class R_AARCH64(enum.IntEnum):
     R_AARCH64_ABS16 = 0x103
     R_AARCH64_ABS32 = 0x102
     R_AARCH64_ABS64 = 0x101
@@ -1237,12 +1246,9 @@ class R(enum.IntEnum):
     R_AARCH64_TLS_DTPREL = 0x405
     R_AARCH64_TLS_TPREL = 0x406
     R_AARCH64_TSTBR14 = 0x117
-    R_AC_SECTOFF_S9 = 0x26
-    R_AC_SECTOFF_S9_1 = 0x27
-    R_AC_SECTOFF_S9_2 = 0x28
-    R_AC_SECTOFF_U8 = 0x23
-    R_AC_SECTOFF_U8_1 = 0x24
-    R_AC_SECTOFF_U8_2 = 0x25
+
+
+class R_ALPHA(enum.IntEnum):
     R_ALPHA_BRADDR = 0x7
     R_ALPHA_COPY = 0x18
     R_ALPHA_DTPMOD64 = 0x1f
@@ -1277,6 +1283,15 @@ class R(enum.IntEnum):
     R_ALPHA_TPREL64 = 0x26
     R_ALPHA_TPRELHI = 0x27
     R_ALPHA_TPRELLO = 0x28
+
+
+class R_ARC(enum.IntEnum):
+    R_AC_SECTOFF_S9 = 0x26
+    R_AC_SECTOFF_S9_1 = 0x27
+    R_AC_SECTOFF_S9_2 = 0x28
+    R_AC_SECTOFF_U8 = 0x23
+    R_AC_SECTOFF_U8_1 = 0x24
+    R_AC_SECTOFF_U8_2 = 0x25
     R_ARC_16 = 0x2
     R_ARC_24 = 0x3
     R_ARC_32 = 0x4
@@ -1336,6 +1351,9 @@ class R(enum.IntEnum):
     R_ARC_TLS_TPOFF = 0x44
     R_ARC_W = 0x1a
     R_ARC_W_ME = 0x1f
+
+
+class R_ARM(enum.IntEnum):
     R_ARM_ABS12 = 0x6
     R_ARM_ABS16 = 0x5
     R_ARM_ABS32 = 0x2
@@ -1463,9 +1481,15 @@ class R(enum.IntEnum):
     R_ARM_TLS_TPOFF32 = 0x13
     R_ARM_V4BX = 0x28
     R_ARM_XPC25 = 0xf
+
+
+class R_BPF(enum.IntEnum):
     R_BPF_64_32 = 0xa
     R_BPF_64_64 = 0x1
     R_BPF_NONE = 0x0
+
+
+class R_CKCORE(enum.IntEnum):
     R_CKCORE_ADDR32 = 0x1
     R_CKCORE_ADDRGOT = 0x11
     R_CKCORE_ADDRGOT_HI16 = 0x24
@@ -1521,6 +1545,9 @@ class R(enum.IntEnum):
     R_CKCORE_TLS_LE32 = 0x33
     R_CKCORE_TLS_TPOFF32 = 0x3a
     R_CKCORE_TOFFSET_LO16 = 0x29
+
+
+class R_CRIS(enum.IntEnum):
     R_CRIS_16 = 0x2
     R_CRIS_16_GOT = 0xd
     R_CRIS_16_GOTPLT = 0xf
@@ -1542,6 +1569,9 @@ class R(enum.IntEnum):
     R_CRIS_NONE = 0x0
     R_CRIS_NUM = 0x14
     R_CRIS_RELATIVE = 0xc
+
+
+class R_IA64(enum.IntEnum):
     R_IA64_COPY = 0x84
     R_IA64_DIR32LSB = 0x25
     R_IA64_DIR32MSB = 0x24
@@ -1623,6 +1653,9 @@ class R(enum.IntEnum):
     R_IA64_TPREL64I = 0x93
     R_IA64_TPREL64LSB = 0x97
     R_IA64_TPREL64MSB = 0x96
+
+
+class R_M32R(enum.IntEnum):
     R_M32R_10_PCREL = 0x4
     R_M32R_10_PCREL_RELA = 0x24
     R_M32R_16 = 0x1
@@ -1667,6 +1700,9 @@ class R(enum.IntEnum):
     R_M32R_RELA_GNU_VTINHERIT = 0x2b
     R_M32R_SDA16 = 0xa
     R_M32R_SDA16_RELA = 0x2a
+
+
+class R_METAG(enum.IntEnum):
     R_METAG_ADDR32 = 0x2
     R_METAG_COPY = 0x2b
     R_METAG_GETSETOFF = 0x5
@@ -1716,6 +1752,9 @@ class R(enum.IntEnum):
     R_METAG_TLS_LE_HI16 = 0x3c
     R_METAG_TLS_LE_LO16 = 0x3d
     R_METAG_TLS_TPOFF = 0x38
+
+
+class R_MICROBLAZE(enum.IntEnum):
     R_MICROBLAZE_32 = 0x1
     R_MICROBLAZE_32_LO = 0x6
     R_MICROBLAZE_32_PCREL = 0x2
@@ -1746,6 +1785,9 @@ class R(enum.IntEnum):
     R_MICROBLAZE_TLSGOTTPREL32 = 0x1c
     R_MICROBLAZE_TLSLD = 0x18
     R_MICROBLAZE_TLSTPREL32 = 0x1d
+
+
+class R_MIPS(enum.IntEnum):
     R_MIPS_16 = 0x1
     R_MIPS_26 = 0x4
     R_MIPS_32 = 0x2
@@ -1798,6 +1840,9 @@ class R(enum.IntEnum):
     R_MIPS_TLS_TPREL64 = 0x30
     R_MIPS_TLS_TPREL_HI16 = 0x31
     R_MIPS_TLS_TPREL_LO16 = 0x32
+
+
+class R_MN10300(enum.IntEnum):
     R_MN10300_16 = 0x2
     R_MN10300_24 = 0x9
     R_MN10300_32 = 0x1
@@ -1834,6 +1879,9 @@ class R(enum.IntEnum):
     R_MN10300_TLS_LDO = 0x1a
     R_MN10300_TLS_LE = 0x1d
     R_MN10300_TLS_TPOFF = 0x20
+
+
+class R_NDS32(enum.IntEnum):
     R_NDS32_32_RELA = 0x14
     R_NDS32_COPY = 0x27
     R_NDS32_GLOB_DAT = 0x28
@@ -1842,6 +1890,9 @@ class R(enum.IntEnum):
     R_NDS32_RELATIVE = 0x2a
     R_NDS32_TLS_DESC = 0x77
     R_NDS32_TLS_TPOFF = 0x66
+
+
+class R_NIOS2(enum.IntEnum):
     R_NIOS2_ALIGN = 0x15
     R_NIOS2_BFD_RELOC_16 = 0xd
     R_NIOS2_BFD_RELOC_32 = 0xc
@@ -1888,6 +1939,9 @@ class R(enum.IntEnum):
     R_NIOS2_TLS_TPREL = 0x23
     R_NIOS2_U16 = 0x2
     R_NIOS2_UJMP = 0x12
+
+
+class R_PARISC(enum.IntEnum):
     R_PARISC_COPY = 0x80
     R_PARISC_DIR14DR = 0x54
     R_PARISC_DIR14R = 0x6
@@ -1998,6 +2052,9 @@ class R(enum.IntEnum):
     R_PARISC_TPREL21L = 0x9a
     R_PARISC_TPREL32 = 0x99
     R_PARISC_TPREL64 = 0xd8
+
+
+class R_PPC64(enum.IntEnum):
     R_PPC64_ADDR14 = 0x7
     R_PPC64_ADDR14_BRNTAKEN = 0x9
     R_PPC64_ADDR14_BRTAKEN = 0x8
@@ -2117,6 +2174,9 @@ class R(enum.IntEnum):
     R_PPC64_UADDR16 = 0x19
     R_PPC64_UADDR32 = 0x18
     R_PPC64_UADDR64 = 0x2b
+
+
+class R_PPC(enum.IntEnum):
     R_PPC_ADDR14 = 0x7
     R_PPC_ADDR14_BRNTAKEN = 0x9
     R_PPC_ADDR14_BRTAKEN = 0x8
@@ -2212,6 +2272,9 @@ class R(enum.IntEnum):
     R_PPC_TPREL32 = 0x49
     R_PPC_UADDR16 = 0x19
     R_PPC_UADDR32 = 0x18
+
+
+class R_RISCV(enum.IntEnum):
     R_RISCV_32 = 0x1
     R_RISCV_32_PCREL = 0x39
     R_RISCV_64 = 0x2
@@ -2268,6 +2331,9 @@ class R(enum.IntEnum):
     R_RISCV_TPREL_LO12_I = 0x1e
     R_RISCV_TPREL_LO12_S = 0x1f
     R_RISCV_TPREL_S = 0x32
+
+
+class R_SH(enum.IntEnum):
     R_SH_ALIGN = 0x1d
     R_SH_CODE = 0x1e
     R_SH_COPY = 0xa2
@@ -2306,6 +2372,9 @@ class R(enum.IntEnum):
     R_SH_TLS_LE_32 = 0x94
     R_SH_TLS_TPOFF32 = 0x97
     R_SH_USES = 0x1b
+
+
+class R_SPARC(enum.IntEnum):
     R_SPARC_10 = 0x1e
     R_SPARC_11 = 0x1f
     R_SPARC_13 = 0xb
@@ -2401,6 +2470,9 @@ class R(enum.IntEnum):
     R_SPARC_WDISP22 = 0x8
     R_SPARC_WDISP30 = 0x7
     R_SPARC_WPLT30 = 0x12
+
+
+class R_TILEGX(enum.IntEnum):
     R_TILEGX_16 = 0x3
     R_TILEGX_16_PCREL = 0x7
     R_TILEGX_32 = 0x2
@@ -2522,6 +2594,9 @@ class R(enum.IntEnum):
     R_TILEGX_TLS_IE_LOAD = 0x75
     R_TILEGX_TLS_TPOFF32 = 0x6f
     R_TILEGX_TLS_TPOFF64 = 0x6c
+
+
+class R_TILEPRO(enum.IntEnum):
     R_TILEPRO_16 = 0x2
     R_TILEPRO_16_PCREL = 0x5
     R_TILEPRO_32 = 0x1
@@ -2614,6 +2689,9 @@ class R(enum.IntEnum):
     R_TILEPRO_TLS_GD_CALL = 0x3c
     R_TILEPRO_TLS_IE_LOAD = 0x41
     R_TILEPRO_TLS_TPOFF32 = 0x54
+
+
+class R_X86_64(enum.IntEnum):
     R_X86_64_16 = 0xc
     R_X86_64_32 = 0xa
     R_X86_64_32S = 0xb
@@ -2716,11 +2794,6 @@ class SHN(enum.IntEnum):
 
 
 class SHT(enum.IntEnum):
-    SHT_ALPHA_DEBUG = 0x70000001
-    SHT_ALPHA_REGINFO = 0x70000002
-    SHT_ARM_ATTRIBUTES = 0x70000003
-    SHT_ARM_EXIDX = 0x70000001
-    SHT_ARM_PREEMPTMAP = 0x70000002
     SHT_CHECKSUM = 0x6ffffff8
     SHT_CSKY_ATTRIBUTES = 0x70000001
     SHT_DYNAMIC = 0x6
@@ -2738,13 +2811,29 @@ class SHT(enum.IntEnum):
     SHT_HIPROC = 0x7fffffff
     SHT_HISUNW = 0x6fffffff
     SHT_HIUSER = 0x8fffffff
-    SHT_IA_64_EXT = 0x70000000
-    SHT_IA_64_UNWIND = 0x70000001
     SHT_INIT_ARRAY = 0xe
+    SHT_NOBITS = 0x8
+    SHT_NOTE = 0x7
+    SHT_NULL = 0x0
+    SHT_NUM = 0x13
+    SHT_PREINIT_ARRAY = 0x10
+    SHT_PROGBITS = 0x1
+    SHT_REL = 0x9
+    SHT_RELA = 0x4
+    SHT_SHLIB = 0xa
+    SHT_STRTAB = 0x3
+    SHT_SYMTAB = 0x2
+    SHT_SYMTAB_SHNDX = 0x12
+    SHT_X86_64_UNWIND = 0x70000001
     SHT_LOOS = 0x60000000
     SHT_LOPROC = 0x70000000
     SHT_LOSUNW = 0x6ffffffa
     SHT_LOUSER = 0x80000000
+    SHT_ALPHA_DEBUG = 0x70000001
+    SHT_ALPHA_REGINFO = 0x70000002
+    SHT_ARM_ATTRIBUTES = 0x70000003
+    SHT_ARM_EXIDX = 0x70000001
+    SHT_ARM_PREEMPTMAP = 0x70000002
     SHT_MIPS_AUXSYM = 0x70000016
     SHT_MIPS_CONFLICT = 0x70000002
     SHT_MIPS_CONTENT = 0x7000000c
@@ -2785,25 +2874,14 @@ class SHT(enum.IntEnum):
     SHT_MIPS_XLATE = 0x70000024
     SHT_MIPS_XLATE_DEBUG = 0x70000025
     SHT_MIPS_XLATE_OLD = 0x70000028
-    SHT_NOBITS = 0x8
-    SHT_NOTE = 0x7
-    SHT_NULL = 0x0
-    SHT_NUM = 0x13
     SHT_PARISC_DOC = 0x70000002
     SHT_PARISC_EXT = 0x70000000
     SHT_PARISC_UNWIND = 0x70000001
-    SHT_PREINIT_ARRAY = 0x10
-    SHT_PROGBITS = 0x1
-    SHT_REL = 0x9
-    SHT_RELA = 0x4
-    SHT_SHLIB = 0xa
-    SHT_STRTAB = 0x3
     SHT_SUNW_COMDAT = 0x6ffffffb
     SHT_SUNW_move = 0x6ffffffa
     SHT_SUNW_syminfo = 0x6ffffffc
-    SHT_SYMTAB = 0x2
-    SHT_SYMTAB_SHNDX = 0x12
-    SHT_X86_64_UNWIND = 0x70000001
+    SHT_IA_64_EXT = 0x70000000
+    SHT_IA_64_UNWIND = 0x70000001
 
 
 class STB(enum.IntEnum):
