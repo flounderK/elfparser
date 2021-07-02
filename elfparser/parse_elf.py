@@ -4,6 +4,7 @@ from . import instantiate_ctype_with_backing, set_backing_value, set_backing_val
 from . import elfstructs
 from . import elfenums
 from . import elfmacros
+from . import constexpr
 from ctypes import c_ubyte, sizeof, addressof, cast, POINTER, create_string_buffer, string_at
 import _ctypes
 
@@ -105,8 +106,8 @@ for sym in sym_array:
     symbol_name = string_at_offset(main_string_table, sym.st_name)
     info_raw = sym.st_info
     # decode sym type and binding
-    symbol_type = elfenums.STT(elfmacros.ELF64_ST_TYPE(info_raw))
-    symbol_binding = elfenums.STB(elfmacros.ELF64_ST_BIND(info_raw))
+    symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
+    symbol_binding = elfenums.STB(constexpr.ELF64_ST_BIND(info_raw))
     symbol_visibility = elfenums.STV(sym.st_other)
     print(symbol_name)
     print(symbol_type)
@@ -122,8 +123,8 @@ for sym in dyn_sym_array:
     symbol_name = string_at_offset(dynamic_string_table, sym.st_name)
     info_raw = sym.st_info
     # decode sym type and binding
-    symbol_type = elfenums.STT(elfmacros.ELF64_ST_TYPE(info_raw))
-    symbol_binding = elfenums.STB(elfmacros.ELF64_ST_BIND(info_raw))
+    symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
+    symbol_binding = elfenums.STB(constexpr.ELF64_ST_BIND(info_raw))
     symbol_visibility = elfenums.STV(sym.st_other)
     print(symbol_name)
     print(symbol_type)
@@ -155,8 +156,8 @@ print("rela entries")
 
 for rela in rela_array:
     rela_info = rela.r_info
-    rela_sym = elfmacros.ELF64_R_SYM(rela_info)
-    # rela_type = elfenums.R(elfmacros.ELF64_R_TYPE(rela_info))
+    rela_sym = constexpr.ELF64_R_SYM(rela_info)
+    # rela_type = elfenums.R(constexpr.ELF64_R_TYPE(rela_info))
     print(string_at_offset(dynamic_string_table, dyn_sym_array[rela_sym].st_name))
     # print(rela_type)
     print(rela)
