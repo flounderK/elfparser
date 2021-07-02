@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 from ctypes import ARRAY, sizeof, POINTER, cast, c_ubyte
+from . import elftypes
+from . import elfenums
 from . import elfmacros
 from . import elfstructs
-from . import elfenums
+from . import constexpr
 
 
 def instantiate_ctype_with_backing(classtype, backing=None):

@@ -2,28 +2,8 @@
 from ctypes import c_ubyte, c_uint16, c_uint32, c_int32, c_uint64, c_int64, sizeof, cast, Structure, Union, ARRAY, POINTER, memmove, byref, addressof
 import _ctypes
 from . import elfmacros
-
-
-elf32_half = c_uint16
-elf32_word = c_uint32
-elf32_sword = c_int32
-elf32_xword = c_uint64
-elf32_sxword = c_int64
-elf32_addr = c_uint32
-elf32_off = c_uint32
-elf32_section = c_uint16
-elf32_versym = elf32_half
-
-
-elf64_half = c_uint16
-elf64_word = c_uint32
-elf64_sword = c_int32
-elf64_xword = c_uint64
-elf64_sxword = c_int64
-elf64_addr = c_uint64
-elf64_off = c_uint64
-elf64_section = c_uint16
-elf64_versym = elf64_half
+from . import elfenums
+from .elftypes import elf32_addr, elf32_half, elf32_off, elf32_section, elf32_sword, elf32_sxword, elf32_versym, elf32_word, elf32_xword, elf64_addr, elf64_half, elf64_off, elf64_section, elf64_sword, elf64_sxword, elf64_versym, elf64_word, elf64_xword
 
 
 class NiceHexFieldRepr:

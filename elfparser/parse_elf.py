@@ -89,6 +89,10 @@ for shdr in shdr_array:
         rela_shdr = shdr
         rela_array_class = elfstructs.Elf64_Rela * (shdr.sh_size // sizeof(elfstructs.Elf64_Rela))
         rela_array = rela_array_class.from_buffer(elf_array, shdr.sh_offset)
+    elif section_type == elfenums.SHT.SHT_REL:
+        rel_shdr = shdr
+        rel_array_class = elfstructs.Elf64_Rel * (shdr.sh_size // sizeof(elfstructs.Elf64_Rel))
+        rel_array = rel_array_class.from_buffer(elf_array, shdr.sh_offset)
 
 
     print(section_name)
