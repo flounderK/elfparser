@@ -45,30 +45,85 @@ shstr = shdr_array[ehdr.e_shstrndx]
 # section_header_string_table = bytes(elf_array[shstr.sh_offset:shstr.sh_offset + shstr.sh_size])
 section_header_string_table = (c_ubyte*shstr.sh_size).from_buffer(elf_array, shstr.sh_offset)
 
+sym_class = (c_ubyte*sizeof(elfstructs.Elf64_Sym))
+dyn_class = (c_ubyte*sizeof(elfstructs.Elf64_Dyn))
+
 # pull out the section header string table
 # section_names = [i.decode() for i in section_header_string_table.split(b'\x00') if i != b'']
 
+strtab_shdr = None
+dynsym_shdr = None
+dynstr_shdr = None
+symtab_shdr = None
+dynamic_shdr = None
+
 for shdr in shdr_array:
-    print(elfenums.SHT(shdr.sh_type))
-    print(string_at_offset(section_header_string_table, shdr.sh_name))
+    section_type = elfenums.SHT(shdr.sh_type)
+    print(section_type)
+    section_name = string_at_offset(section_header_string_table, shdr.sh_name)
+    if section_type == elfenums.SHT.SHT_STRTAB and section_name == '.strtab':
+        strtab_shdr = shdr
+        main_string_table = (c_ubyte*shdr.sh_size).from_buffer(elf_array, shdr.sh_offset)
+    elif section_type == elfenums.SHT.SHT_STRTAB and section_name == '.dynstr':
+        dynstr_shdr = shdr
+        dynamic_string_table = (c_ubyte*shdr.sh_size).from_buffer(elf_array, shdr.sh_offset)
+    elif section_type == elfenums.SHT.SHT_DYNSYM and section_name == '.dynsym':
+        dynsym_shdr = shdr
+        dyn_sym_array_class = elfstructs.Elf64_Sym * (shdr.sh_size // sizeof(elfstructs.Elf64_Sym))
+        dyn_sym_array = dyn_sym_array_class.from_buffer(elf_array, dynsym_shdr.sh_offset)
+    elif section_type == elfenums.SHT.SHT_SYMTAB and section_name == '.symtab':
+        symtab_shdr = shdr
+        sym_array_class = elfstructs.Elf64_Sym * (shdr.sh_size // sizeof(elfstructs.Elf64_Sym))
+        sym_array = sym_array_class.from_buffer(elf_array, symtab_shdr.sh_offset)
+    elif section_type == elfenums.SHT.SHT_DYNAMIC and section_name == '.dynamic':
+        dynamic_shdr = shdr
+        dyn_array_class = elfstructs.Elf64_Dyn * (dynamic_shdr.sh_size // sizeof(dyn_class))
+        dyn_array = dyn_array_class.from_buffer(elf_array, dynamic_shdr.sh_offset)
+
+    print(section_name)
     print(shdr)
     print()
 
-sym_class = (c_ubyte*sizeof(elfstructs.Elf64_Sym))
 
-symtab_shdr = [i for i in shdr_array if i.sh_type == elfenums.SHT.SHT_SYMTAB][0]
 
-sym_array_class = elfstructs.Elf64_Sym * (symtab_shdr.sh_size // sizeof(elfstructs.Elf64_Sym))
-sym_array = sym_array_class.from_buffer(elf_array, symtab_shdr.sh_offset)
+print("regular syms")
+for sym in sym_array:
+    symbol_name = string_at_offset(main_string_table, sym.st_name)
+    info_raw = sym.st_info
+    # decode sym type and binding
+    symbol_type = elfenums.STT(elfmacros.ELF64_ST_TYPE(info_raw))
+    symbol_binding = elfenums.STB(elfmacros.ELF64_ST_BIND(info_raw))
+    symbol_visibility = elfenums.STV(sym.st_other)
+    print(symbol_name)
+    print(symbol_type)
+    print(symbol_binding)
+    print(symbol_visibility)
+    print(sym)
+    print()
 
-# decode sym type
-[elfenums.STT(elfmacros.ELF64_ST_TYPE(i.st_info)) for i in sym_array]
 
-# sym_backing, sym = instantiate_ctype_with_backing(elfstructs.Elf64_Sym)
+print("dynamic syms")
 
-# for i in range(ehdr.e_shnum):
-#     set_backing_value_from_elf_offset(shdr_backing, e, ehdr.e_shoff + (i*len(shdr_backing)))
-#     print("%d: %s" % (i, elfenums.SHT(shdr.sh_type)))
-#     print(shdr)
+for sym in dyn_sym_array:
+    symbol_name = string_at_offset(dynamic_string_table, sym.st_name)
+    info_raw = sym.st_info
+    # decode sym type and binding
+    symbol_type = elfenums.STT(elfmacros.ELF64_ST_TYPE(info_raw))
+    symbol_binding = elfenums.STB(elfmacros.ELF64_ST_BIND(info_raw))
+    symbol_visibility = elfenums.STV(sym.st_other)
+    print(symbol_name)
+    print(symbol_type)
+    print(symbol_binding)
+    print(symbol_visibility)
+    print(sym)
+    print()
+
+
+for d in dyn_array:
+    tag_type = elfenums.DT(d.d_tag)
+    print(tag_type)
+    print(hex(d.d_un.d_val))
+    print(d)
+    print()
 
 

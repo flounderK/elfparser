@@ -93,49 +93,24 @@ class DTF(enum.IntEnum):
     DTF_1_PARINIT = 0x1
 
 
-class DT(enum.IntEnum):
+class DT_ALPHA(enum.IntEnum):
+    DT_ALPHA_NUM = 0x1
+    DT_ALPHA_PLTRO = 0x70000000
+
+
+class DT_IA_64(enum.IntEnum):
+    DT_IA_64_NUM = 0x1
+    DT_IA_64_PLT_RESERVE = 0x70000000
+
+
+class DT_AARCH64(enum.IntEnum):
     DT_AARCH64_BTI_PLT = 0x70000001
     DT_AARCH64_NUM = 0x6
     DT_AARCH64_PAC_PLT = 0x70000003
     DT_AARCH64_VARIANT_PCS = 0x70000005
-    DT_ADDRNUM = 0xb
-    DT_ADDRRNGHI = 0x6ffffeff
-    DT_ADDRRNGLO = 0x6ffffe00
-    DT_ALPHA_NUM = 0x1
-    DT_ALPHA_PLTRO = 0x70000000
-    DT_AUDIT = 0x6ffffefc
-    DT_AUXILIARY = 0x7ffffffd
-    DT_BIND_NOW = 0x18
-    DT_CHECKSUM = 0x6ffffdf8
-    DT_CONFIG = 0x6ffffefa
-    DT_DEBUG = 0x15
-    DT_DEPAUDIT = 0x6ffffefb
-    DT_ENCODING = 0x20
-    DT_EXTRANUM = 0x3
-    DT_FEATURE_1 = 0x6ffffdfc
-    DT_FILTER = 0x7fffffff
-    DT_FINI = 0xd
-    DT_FINI_ARRAY = 0x1a
-    DT_FINI_ARRAYSZ = 0x1c
-    DT_FLAGS = 0x1e
-    DT_FLAGS_1 = 0x6ffffffb
-    DT_GNU_CONFLICT = 0x6ffffef8
-    DT_GNU_CONFLICTSZ = 0x6ffffdf6
-    DT_GNU_HASH = 0x6ffffef5
-    DT_GNU_LIBLIST = 0x6ffffef9
-    DT_GNU_LIBLISTSZ = 0x6ffffdf7
-    DT_GNU_PRELINKED = 0x6ffffdf5
-    DT_HASH = 0x4
-    DT_HIOS = 0x6ffff000
-    DT_HIPROC = 0x7fffffff
-    DT_IA_64_NUM = 0x1
-    DT_IA_64_PLT_RESERVE = 0x70000000
-    DT_INIT = 0xc
-    DT_INIT_ARRAY = 0x19
-    DT_INIT_ARRAYSZ = 0x1b
-    DT_JMPREL = 0x17
-    DT_LOOS = 0x6000000d
-    DT_LOPROC = 0x70000000
+
+
+class DT_MIPS(enum.IntEnum):
     DT_MIPS_AUX_DYNAMIC = 0x70000031
     DT_MIPS_BASE_ADDRESS = 0x70000006
     DT_MIPS_COMPACT_SIZE = 0x7000002f
@@ -184,27 +159,50 @@ class DT(enum.IntEnum):
     DT_MIPS_TIME_STAMP = 0x70000002
     DT_MIPS_UNREFEXTNO = 0x70000012
     DT_MIPS_XHASH = 0x70000036
-    DT_MOVEENT = 0x6ffffdfa
-    DT_MOVESZ = 0x6ffffdfb
-    DT_MOVETAB = 0x6ffffefe
-    DT_NEEDED = 0x1
-    DT_NIOS2_GP = 0x70000002
-    DT_NULL = 0x0
-    DT_NUM = 0x23
-    DT_PLTGOT = 0x3
-    DT_PLTPAD = 0x6ffffefd
-    DT_PLTPADSZ = 0x6ffffdf9
-    DT_PLTREL = 0x14
-    DT_PLTRELSZ = 0x2
-    DT_POSFLAG_1 = 0x6ffffdfd
+
+
+class DT_PPC64(enum.IntEnum):
     DT_PPC64_GLINK = 0x70000000
     DT_PPC64_NUM = 0x4
     DT_PPC64_OPD = 0x70000001
     DT_PPC64_OPDSZ = 0x70000002
     DT_PPC64_OPT = 0x70000003
+
+
+class DT_PPC(enum.IntEnum):
     DT_PPC_GOT = 0x70000000
     DT_PPC_NUM = 0x2
     DT_PPC_OPT = 0x70000001
+
+
+class DT(enum.IntEnum):
+    DT_AUXILIARY = 0x7ffffffd
+    DT_BIND_NOW = 0x18
+    DT_DEBUG = 0x15
+    DT_ENCODING = 0x20
+    DT_EXTRANUM = 0x3
+    DT_FILTER = 0x7fffffff
+    DT_FINI = 0xd
+    DT_FINI_ARRAY = 0x1a
+    DT_FINI_ARRAYSZ = 0x1c
+    DT_FLAGS = 0x1e
+    DT_FLAGS_1 = 0x6ffffffb
+    DT_HASH = 0x4
+    DT_HIOS = 0x6ffff000
+    DT_HIPROC = 0x7fffffff
+    DT_INIT = 0xc
+    DT_INIT_ARRAY = 0x19
+    DT_INIT_ARRAYSZ = 0x1b
+    DT_JMPREL = 0x17
+    DT_LOOS = 0x6000000d
+    DT_LOPROC = 0x70000000
+    DT_NEEDED = 0x1
+    DT_NIOS2_GP = 0x70000002
+    DT_NULL = 0x0
+    DT_NUM = 0x23
+    DT_PLTGOT = 0x3
+    DT_PLTREL = 0x14
+    DT_PLTRELSZ = 0x2
     DT_PREINIT_ARRAY = 0x20
     DT_PREINIT_ARRAYSZ = 0x21
     DT_PROCNUM = 0x37
@@ -225,23 +223,47 @@ class DT(enum.IntEnum):
     DT_STRTAB = 0x5
     DT_SYMBOLIC = 0x10
     DT_SYMENT = 0xb
-    DT_SYMINENT = 0x6ffffdff
-    DT_SYMINFO = 0x6ffffeff
-    DT_SYMINSZ = 0x6ffffdfe
     DT_SYMTAB = 0x6
     DT_SYMTAB_SHNDX = 0x22
     DT_TEXTREL = 0x16
-    DT_TLSDESC_GOT = 0x6ffffef7
-    DT_TLSDESC_PLT = 0x6ffffef6
-    DT_VALNUM = 0xc
-    DT_VALRNGHI = 0x6ffffdff
-    DT_VALRNGLO = 0x6ffffd00
     DT_VERDEF = 0x6ffffffc
     DT_VERDEFNUM = 0x6ffffffd
     DT_VERNEED = 0x6ffffffe
     DT_VERNEEDNUM = 0x6fffffff
     DT_VERSIONTAGNUM = 0x10
     DT_VERSYM = 0x6ffffff0
+
+# values that fall between DT_VALRNGLO and DT_VALRNGHI
+    DT_VALNUM = 0xc
+    DT_VALRNGHI = 0x6ffffdff
+    DT_VALRNGLO = 0x6ffffd00
+    DT_GNU_CONFLICTSZ = 0x6ffffdf6
+    DT_GNU_LIBLISTSZ = 0x6ffffdf7
+    DT_GNU_PRELINKED = 0x6ffffdf5
+    DT_PLTPADSZ = 0x6ffffdf9
+    DT_MOVEENT = 0x6ffffdfa
+    DT_MOVESZ = 0x6ffffdfb
+    DT_CHECKSUM = 0x6ffffdf8
+    DT_FEATURE_1 = 0x6ffffdfc
+    DT_POSFLAG_1 = 0x6ffffdfd
+    DT_SYMINSZ = 0x6ffffdfe
+    DT_SYMINENT = 0x6ffffdff
+    DT_TLSDESC_GOT = 0x6ffffef7
+    DT_TLSDESC_PLT = 0x6ffffef6
+
+# values that fall between DT_ADDRRNGLO and DT_ADDRRNGHI
+    DT_ADDRNUM = 0xb
+    DT_ADDRRNGHI = 0x6ffffeff
+    DT_ADDRRNGLO = 0x6ffffe00
+    DT_GNU_CONFLICT = 0x6ffffef8
+    DT_GNU_HASH = 0x6ffffef5
+    DT_GNU_LIBLIST = 0x6ffffef9
+    DT_CONFIG = 0x6ffffefa
+    DT_DEPAUDIT = 0x6ffffefb
+    DT_AUDIT = 0x6ffffefc
+    DT_PLTPAD = 0x6ffffefd
+    DT_MOVETAB = 0x6ffffefe
+    DT_SYMINFO = 0x6ffffeff
 
 
 class EFA(enum.IntEnum):
