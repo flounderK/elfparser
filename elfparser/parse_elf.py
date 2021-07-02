@@ -37,6 +37,9 @@ elf_array = (c_ubyte*len(e)).from_buffer(bytearray(e))
 
 ehdr = cast(elf_array, POINTER(elfstructs.Elf64_Ehdr)).contents
 
+phdr_array_class = (ehdr.e_phnum * elfstructs.Elf64_Phdr)
+phdr_array = phdr_array_class.from_buffer(elf_array, ehdr.e_phoff)
+
 shdr_array_class = (ehdr.e_shnum * elfstructs.Elf64_Shdr)
 shdr_array = shdr_array_class.from_buffer(elf_array, ehdr.e_shoff)
 
@@ -56,7 +59,10 @@ dynsym_shdr = None
 dynstr_shdr = None
 symtab_shdr = None
 dynamic_shdr = None
+rela_shdr = None
+rel_shdr = None
 
+print("section headers")
 for shdr in shdr_array:
     section_type = elfenums.SHT(shdr.sh_type)
     print(section_type)
@@ -77,13 +83,17 @@ for shdr in shdr_array:
         sym_array = sym_array_class.from_buffer(elf_array, symtab_shdr.sh_offset)
     elif section_type == elfenums.SHT.SHT_DYNAMIC and section_name == '.dynamic':
         dynamic_shdr = shdr
-        dyn_array_class = elfstructs.Elf64_Dyn * (dynamic_shdr.sh_size // sizeof(dyn_class))
-        dyn_array = dyn_array_class.from_buffer(elf_array, dynamic_shdr.sh_offset)
+        dyn_array_class = elfstructs.Elf64_Dyn * (shdr.sh_size // sizeof(dyn_class))
+        dyn_array = dyn_array_class.from_buffer(elf_array, shdr.sh_offset)
+    elif section_type == elfenums.SHT.SHT_RELA:
+        rela_shdr = shdr
+        rela_array_class = elfstructs.Elf64_Rela * (shdr.sh_size // sizeof(elfstructs.Elf64_Rela))
+        rela_array = rela_array_class.from_buffer(elf_array, shdr.sh_offset)
+
 
     print(section_name)
     print(shdr)
     print()
-
 
 
 print("regular syms")
@@ -118,12 +128,34 @@ for sym in dyn_sym_array:
     print(sym)
     print()
 
+print("dynamic entries")
 
 for d in dyn_array:
     tag_type = elfenums.DT(d.d_tag)
     print(tag_type)
     print(hex(d.d_un.d_val))
     print(d)
+    print()
+
+print("phdr entries")
+
+for phdr in phdr_array:
+    phdr_type = elfenums.PT(phdr.p_type)
+    phdr_flags = elfenums.PF(phdr.p_flags)
+    print(phdr_type)
+    print(phdr_flags)
+    print(phdr)
+    print()
+
+print("rela entries")
+
+for rela in rela_array:
+    rela_info = rela.r_info
+    rela_sym = elfmacros.ELF64_R_SYM(rela_info)
+    # rela_type = elfenums.R(elfmacros.ELF64_R_TYPE(rela_info))
+    print(string_at_offset(dynamic_string_table, dyn_sym_array[rela_sym].st_name))
+    # print(rela_type)
+    print(rela)
     print()
 
 
