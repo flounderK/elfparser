@@ -7,6 +7,7 @@ from . import elfmacros
 from . import constexpr
 from ctypes import c_ubyte, sizeof, addressof, cast, POINTER, create_string_buffer, string_at
 import _ctypes
+import _io
 
 
 def pull_stringtable(elf_array, shdr):
@@ -31,7 +32,45 @@ def string_at_offset(stringtable, offset=0, cast_to_str=True):
     return s
 
 
+class ElfParser:
+    def __init__(self, file):
+        if isinstance(file, (_io._TextIOWrapper)) or issubclass(file.__class__, (_io._TextIOBase)):
+            self.file = file.name
+            self.fd = file
+        elif isinstance(file, str):
+            self.file = file
+            self.fd = open(file, "rb")
+        else:
+            raise NotImplementedError()
+
+    def _parse_ident(self):
+        orig_off = self.fd.tell()
+        ident_buf_class = c_ubyte*sizeof(elfstructs.Elf_Ident)
+        ident_buf = ident_buf_class.from_buffer(bytearray(self.fd.read(sizeof(elfstructs.Elf_Ident))))
+        ident = cast(ident_buf, POINTER(elfstructs.Elf_Ident)).contents
+        self.fd.seek(orig_off)
+        # confirm elf magic
+        if ident.ei_elfmag != elfmacros.ELFMAG:
+            raise Exception()
+
+        elfclass = elfenums.ELFCLASS(ident.ei_class)
+        endianness = elfenums.ELFDATA(ident.ei_data)
+        osabi = elfenums.ELFOSABI(ident.ei_osabi)
+
+
+
+
+
+
+
+
+
+
 with open("chal", "rb") as f:
+    ident_buf_class = c_ubyte*sizeof(elfstructs.Elf_Ident)
+    ident_buf = ident_buf_class.from_buffer(bytearray(f.read(sizeof(elfstructs.Elf_Ident))))
+    ident = cast(ident_buf, POINTER(elfstructs.Elf_Ident)).contents
+    f.seek(0)
     e = f.read()
 
 elf_array = (c_ubyte*len(e)).from_buffer(bytearray(e))
