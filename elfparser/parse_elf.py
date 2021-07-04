@@ -6,6 +6,8 @@ from . import elfenums
 from . import elfmacros
 from . import constexpr
 from ctypes import c_ubyte, sizeof, addressof, cast, POINTER, create_string_buffer, string_at
+from types import SimpleNamespace
+from collections import defaultdict, namedtuple
 import _ctypes
 import _io
 import io
@@ -45,6 +47,12 @@ class ElfParser:
             self.__original_offset = 0
         else:
             raise NotImplementedError("file must be a filepath or ")
+        self.sections = []
+        self.segments = []
+        self.symbols = {}
+        self.symbol_entries = []
+        self.dynamic_entries = []
+        self.relocation_entries = []
 
         self._lazy_load = lazy_load
         if self._lazy_load is False:
@@ -56,6 +64,8 @@ class ElfParser:
         self._parse_ident()
         self._apply_elf_structures()
         self._parse_ehdr()
+        self._parse_shdrs()
+        self._parse_symbol_entries()
 
     def __get_c_array_at_offset(self, offset, size, reset_pos=True):
         memory_class = (c_ubyte*size)
@@ -128,12 +138,71 @@ class ElfParser:
         phdr_array_buffer = self.__get_c_array_at_offset(ehdr.e_phoff, ehdr.e_phentsize*ehdr.e_phnum)
         self._phdr_array = cast(phdr_array_buffer, POINTER(phdr_array_memory_class)).contents
 
+    def _parse_shdrs(self):
+        # maybe check for  weird occurrances here, like having 7 string tables
+        # TODO: make a subclass of namedtuple that only prints certain fields in the repr
+        section_tuple = namedtuple('Section', ['name', 'type'] + list(dict(self._ElfW_Shdr._fields_).keys()))
+        for shdr in self._shdr_array:
+            section_type = elfenums.SHT(shdr.sh_type)
+            section_name = string_at_offset(self._shstrtab, shdr.sh_name)
+            if section_type == elfenums.SHT.SHT_STRTAB and section_name == '.strtab':
+                self._string_table = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                                  shdr.sh_size)
+            elif section_type == elfenums.SHT.SHT_STRTAB and section_name == '.dynstr':
+                self._dynamic_string_table = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                                          shdr.sh_size)
+            elif section_type == elfenums.SHT.SHT_DYNSYM and section_name == '.dynsym':
+                dyn_sym_array_memory_class = self._ElfW_Sym * (shdr.sh_size // sizeof(self._ElfW_Sym))
+                dyn_sym_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                                    shdr.sh_size)
 
+                self._dyn_sym_array = cast(dyn_sym_array_buffer, POINTER(dyn_sym_array_memory_class)).contents
+            elif section_type == elfenums.SHT.SHT_SYMTAB and section_name == '.symtab':
+                sym_array_memory_class = self._ElfW_Sym * (shdr.sh_size // sizeof(self._ElfW_Sym))
+                sym_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                                shdr.sh_size)
+                self._sym_array = cast(sym_array_buffer, POINTER(sym_array_memory_class)).contents
+            elif section_type == elfenums.SHT.SHT_DYNAMIC and section_name == '.dynamic':
+                dyn_array_memory_class = self._ElfW_Dyn * (shdr.sh_size // sizeof(self._ElfW_Dyn))
+                dyn_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                                shdr.sh_size)
+                self._dyn_array = cast(dyn_array_buffer, POINTER(dyn_array_memory_class)).contents
+            elif section_type == elfenums.SHT.SHT_RELA:
+                rela_array_memory_class = self._ElfW_Rela * (shdr.sh_size // sizeof(self._ElfW_Rela))
+                rela_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                                 shdr.sh_size)
+                self._rela_array = cast(rela_array_buffer, POINTER(rela_array_memory_class)).contents
+            elif section_type == elfenums.SHT.SHT_REL:
+                rel_array_memory_class = self._ElfW_Rel * (shdr.sh_size // sizeof(self._ElfW_Rel))
+                rel_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                                shdr.sh_size)
+                self._rel_array = cast(rel_array_buffer, POINTER(rel_array_memory_class)).contents
 
+            section_dict = dict(shdr)
+            section_dict['name'] = section_name
+            section_dict['type'] = section_type
 
+            self.sections.append(section_tuple(**section_dict))
 
+    def _parse_symbol_entries(self):
+        extra_fields = ['name', 'type', 'binding', 'visibility']
+        sym_tuple = namedtuple('Symbol', extra_fields + list(dict(self._ElfW_Sym._fields_).keys()))
+        for sym in sym_array:
+            symbol_name = string_at_offset(main_string_table, sym.st_name)
+            info_raw = sym.st_info
+            # decode sym type and binding
+            symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
+            symbol_binding = elfenums.STB(constexpr.ELF64_ST_BIND(info_raw))
+            symbol_visibility = elfenums.STV(sym.st_other)
+            if sym.st_value != 0:
+                self.symbols[symbol_name] = sym.st_value
 
-
+            symbol_entry_dict = dict(sym)
+            symbol_entry_dict['name'] = symbol_name
+            symbol_entry_dict['type'] = symbol_type
+            symbol_entry_dict['binding'] = symbol_binding
+            symbol_entry_dict['visibility'] = symbol_visibility
+            self.symbol_entries.append(sym_tuple(**symbol_entry_dict))
 
 
 
