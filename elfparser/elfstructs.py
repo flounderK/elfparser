@@ -793,3 +793,26 @@ NON_NATIVE_ELF64_STRUCTURES = {"ElfW_Ehdr": Elf64_Ehdr_NonNative,
                                "Elf_Options_Hw": Elf_Options_Hw_NonNative,
                                "ElfW_Lib": Elf64_Lib_NonNative,
                                "Elf_MIPS_ABIFlags_v0": Elf_MIPS_ABIFlags_v0_NonNative}
+
+
+def get_elf_structures(bits, endianness):
+    if endianness in ['be', 'big', 'eb']:
+        endianness = 'big'
+    elif endianness in ['el', 'le', 'little']:
+        endianness = 'little'
+    else:
+        raise Exception("Endianness is not valid")
+
+    system_endianness = sys.byteorder
+    if bits == 32:
+        if endianness == system_endianness:
+            return NATIVE_ELF32_STRUCTURES
+        else:
+            return NON_NATIVE_ELF32_STRUCTURES
+    elif bits == 64:
+        if endianness == system_endianness:
+            return NATIVE_ELF64_STRUCTURES
+        else:
+            return NON_NATIVE_ELF64_STRUCTURES
+    else:
+        raise Exception("Bitness must be 32 or 64")
