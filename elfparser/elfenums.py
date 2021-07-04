@@ -286,9 +286,12 @@ class EFA(enum.IntEnum):
     EFA_PARISC_2_0 = 0x214
 
 
-class EF(enum.IntEnum):
+class EF_ALPHA(enum.IntEnum):
     EF_ALPHA_32BIT = 0x1
     EF_ALPHA_CANRELAX = 0x2
+
+
+class EF_ARM(enum.IntFlag):
     EF_ARM_ABI_FLOAT_HARD = 0x400
     EF_ARM_ABI_FLOAT_SOFT = 0x200
     EF_ARM_ALIGN8 = 0x40
@@ -315,15 +318,27 @@ class EF(enum.IntEnum):
     EF_ARM_SOFT_FLOAT = 0x200
     EF_ARM_SYMSARESORTED = 0x4
     EF_ARM_VFP_FLOAT = 0x400
+
+
+class EF_68K(enum.IntFlag):
     EF_CPU32 = 0x810000
+
+
+class EF_CSKY(enum.IntFlag):
     EF_CSKY_ABIMASK = 0xf0000000
     EF_CSKY_ABIV1 = 0x10000000
     EF_CSKY_ABIV2 = 0x20000000
     EF_CSKY_OTHER = 0xfff0000
     EF_CSKY_PROCESSOR = 0xffff
+
+
+class EF_IA(enum.IntFlag):
     EF_IA_64_ABI64 = 0x10
     EF_IA_64_ARCH = 0xff000000
     EF_IA_64_MASKOS = 0xf
+
+
+class EF_MIPS(enum.IntFlag):
     EF_MIPS_64BIT_WHIRL = 0x10
     EF_MIPS_ABI2 = 0x20
     EF_MIPS_ABI_ON32 = 0x40
@@ -343,6 +358,9 @@ class EF(enum.IntEnum):
     EF_MIPS_NOREORDER = 0x1
     EF_MIPS_PIC = 0x2
     EF_MIPS_XGOT = 0x8
+
+
+class EF_PARISC(enum.IntFlag):
     EF_PARISC_ARCH = 0xffff
     EF_PARISC_EXT = 0x20000
     EF_PARISC_LAZYSWAP = 0x400000
@@ -350,17 +368,29 @@ class EF(enum.IntEnum):
     EF_PARISC_NO_KABP = 0x100000
     EF_PARISC_TRAPNIL = 0x10000
     EF_PARISC_WIDE = 0x80000
+
+
+class EF_PPC(enum.IntFlag):
     EF_PPC64_ABI = 0x3
     EF_PPC_EMB = 0x80000000
     EF_PPC_RELOCATABLE = 0x10000
     EF_PPC_RELOCATABLE_LIB = 0x8000
+
+
+class EF_RISCV(enum.IntFlag):
     EF_RISCV_FLOAT_ABI = 0x6
     EF_RISCV_FLOAT_ABI_DOUBLE = 0x4
     EF_RISCV_FLOAT_ABI_QUAD = 0x6
     EF_RISCV_FLOAT_ABI_SINGLE = 0x2
     EF_RISCV_FLOAT_ABI_SOFT = 0x0
     EF_RISCV_RVC = 0x1
+
+
+class EF_S390(enum.IntFlag):
     EF_S390_HIGH_GPRS = 0x1
+
+
+class EF_SH(enum.IntFlag):
     EF_SH1 = 0x1
     EF_SH2 = 0x2
     EF_SH2A = 0xd
@@ -383,10 +413,16 @@ class EF(enum.IntEnum):
     EF_SH_DSP = 0x4
     EF_SH_MACH_MASK = 0x1f
     EF_SH_UNKNOWN = 0x0
+
+
+class EF_SPARCV9(enum.IntFlag):
     EF_SPARCV9_MM = 0x3
     EF_SPARCV9_PSO = 0x1
     EF_SPARCV9_RMO = 0x2
     EF_SPARCV9_TSO = 0x0
+
+
+class EF_SPARC(enum.IntFlag):
     EF_SPARC_32PLUS = 0x100
     EF_SPARC_EXT_MASK = 0xffff00
     EF_SPARC_HAL_R1 = 0x400
