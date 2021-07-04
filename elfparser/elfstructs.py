@@ -187,6 +187,19 @@ class Elf64_Ehdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
                 ("e_shstrndx", elf64_half)]
 
 
+class Elf32_Chdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    _fields_ = [("ch_type", elf32_word),
+                ("ch_size", elf32_word),
+                ("ch_addralign", elf32_word)]
+
+
+class Elf64_Chdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    _fields_ = [("ch_type", elf64_word),
+                ("ch_reserved", elf64_word),
+                ("ch_size", elf64_xword),
+                ("ch_addralign", elf64_xword)]
+
+
 class Elf32_Phdr(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("p_type", elf32_word),
                 ("p_offset", elf32_off),
@@ -291,6 +304,36 @@ class Elf64_Move(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
                 ("m_stride", elf64_half)]
 
 
+class Elf32_gptab(Union, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    class _Elf32_gptab_gt_header(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+        _fields_ = [("gt_current_g_value", elf32_word),
+                    ("gt_unused", elf32_word)]
+
+    class _Elf32_gptab_gt_entry(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+        _fields_ = [("gt_g_value", elf32_word),
+                    ("gt_bytes", elf32_word)]
+    _fields_ = [("gt_header", _Elf32_gptab_gt_header),
+                ("gt_entry", _Elf32_gptab_gt_entry)]
+
+
+class Elf32_RegInfo(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    _fields_ = [("ri_gprmask", elf32_word),
+                ("ri_cprmask", elf32_word*4),
+                ("ri_gp_value", elf32_sword)]
+
+
+class Elf_Options(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    _fields_ = [("kind", c_ubyte),
+                ("size", c_ubyte),
+                ("section", elf32_section),
+                ("info", elf32_word)]
+
+
+class Elf_Options_Hw(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    _fields_ = [("hwp_flags1", elf32_word),
+                ("hwp_flags2", elf32_word)]
+
+
 class Elf32_Lib(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
     _fields_ = [("l_name", elf32_word),
                 ("l_time_stamp", elf32_word),
@@ -305,6 +348,20 @@ class Elf64_Lib(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
                 ("l_checksum", elf64_word),
                 ("l_version", elf64_word),
                 ("l_flags", elf64_word)]
+
+
+class Elf_MIPS_ABIFlags_v0(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
+    _fields_ = [("version", elf32_half),
+                ("isa_level", c_ubyte),
+                ("isa_rev", c_ubyte),
+                ("gpr_size", c_ubyte),
+                ("cpr1_size", c_ubyte),
+                ("cpr2_size", c_ubyte),
+                ("fp_abi", c_ubyte),
+                ("isa_ext", elf32_word),
+                ("ases", elf32_word),
+                ("flags1", elf32_word),
+                ("flags2", elf32_word)]
 
 
 class Elf32_Verdef(Structure, NiceHexFieldRepr, CtypesByteLevelManipulation):
@@ -438,6 +495,12 @@ Elf32_Ehdr_NonNative = new_class('Elf32_Ehdr_NonNative',
                           CtypesByteLevelManipulation))
 Elf32_Ehdr_NonNative._fields_ = Elf32_Ehdr._fields_.copy()
 
+Elf32_Chdr_NonNative = new_class('Elf32_Chdr_NonNative',
+                   bases=(NonNativeStructure,
+                          NiceHexFieldRepr,
+                          CtypesByteLevelManipulation))
+Elf32_Chdr_NonNative._fields_ = Elf32_Chdr._fields_.copy()
+
 Elf32_Lib_NonNative = new_class('Elf32_Lib_NonNative',
                    bases=(NonNativeStructure,
                           NiceHexFieldRepr,
@@ -523,6 +586,13 @@ Elf64_Ehdr_NonNative = new_class('Elf64_Ehdr_NonNative',
                           CtypesByteLevelManipulation))
 Elf64_Ehdr_NonNative._fields_ = Elf64_Ehdr._fields_.copy()
 
+
+Elf64_Chdr_NonNative = new_class('Elf64_Chdr_NonNative',
+                   bases=(NonNativeStructure,
+                          NiceHexFieldRepr,
+                          CtypesByteLevelManipulation))
+Elf64_Chdr_NonNative._fields_ = Elf64_Chdr._fields_.copy()
+
 Elf64_Lib_NonNative = new_class('Elf64_Lib_NonNative',
                    bases=(NonNativeStructure,
                           NiceHexFieldRepr,
@@ -600,4 +670,128 @@ Elf64_Verneed_NonNative = new_class('Elf64_Verneed_NonNative',
                           NiceHexFieldRepr,
                           CtypesByteLevelManipulation))
 Elf64_Verneed_NonNative._fields_ = Elf64_Verneed._fields_.copy()
+
+Elf32_gptab_NonNative = new_class('Elf32_gptab_NonNative',
+                          bases=(NonNativeStructure,
+                                 NiceHexFieldRepr,
+                                 CtypesByteLevelManipulation))
+Elf32_gptab_NonNative._fields_ = Elf32_gptab._fields_.copy()
+
+Elf32_RegInfo_NonNative = new_class('Elf32_RegInfo_NonNative',
+                          bases=(NonNativeStructure,
+                                 NiceHexFieldRepr,
+                                 CtypesByteLevelManipulation))
+Elf32_RegInfo_NonNative._fields_ = Elf32_RegInfo._fields_.copy()
+
+Elf_Options_NonNative = new_class('Elf_Options_NonNative',
+                          bases=(NonNativeStructure,
+                                 NiceHexFieldRepr,
+                                 CtypesByteLevelManipulation))
+Elf_Options_NonNative._fields_ = Elf_Options._fields_.copy()
+
+Elf_Options_Hw_NonNative = new_class('Elf_Options_Hw_NonNative',
+                          bases=(NonNativeStructure,
+                                 NiceHexFieldRepr,
+                                 CtypesByteLevelManipulation))
+Elf_Options_Hw_NonNative._fields_ = Elf_Options_Hw._fields_.copy()
+
+Elf_MIPS_ABIFlags_v0_NonNative = new_class('Elf_MIPS_ABIFlags_v0_NonNative',
+                          bases=(NonNativeStructure,
+                                 NiceHexFieldRepr,
+                                 CtypesByteLevelManipulation))
+Elf_MIPS_ABIFlags_v0_NonNative._fields_ = Elf_MIPS_ABIFlags_v0._fields_.copy()
+
+
+NATIVE_ELF32_STRUCTURES = [Elf32_Ehdr,
+                           Elf32_Shdr,
+                           Elf32_Chdr,
+                           Elf32_Sym,
+                           Elf32_Syminfo,
+                           Elf32_Rel,
+                           Elf32_Rela,
+                           Elf32_Phdr,
+                           Elf32_Dyn,
+                           Elf32_Verdef,
+                           Elf32_Verdaux,
+                           Elf32_Verneed,
+                           Elf32_Vernaux,
+                           Elf32_aux_t,
+                           Elf32_Nhdr,
+                           Elf32_Move,
+                           Elf32_gptab,
+                           Elf32_RegInfo,
+                           Elf_Options,
+                           Elf_Options_Hw,
+                           Elf32_Lib,
+                           Elf_MIPS_ABIFlags_v0]
+
+NATIVE_ELF64_STRUCTURES = [Elf64_Ehdr,
+                           Elf64_Shdr,
+                           Elf64_Chdr,
+                           Elf64_Sym,
+                           Elf64_Syminfo,
+                           Elf64_Rel,
+                           Elf64_Rela,
+                           Elf64_Phdr,
+                           Elf64_Dyn,
+                           Elf64_Verdef,
+                           Elf64_Verdaux,
+                           Elf64_Verneed,
+                           Elf64_Vernaux,
+                           Elf64_aux_t,
+                           Elf64_Nhdr,
+                           Elf64_Move,
+                           Elf32_gptab,
+                           Elf32_RegInfo,
+                           Elf_Options,
+                           Elf_Options_Hw,
+                           Elf64_Lib,
+                           Elf_MIPS_ABIFlags_v0]
+
+
+NON_NATIVE_ELF32_STRUCTURES = [Elf32_Ehdr_NonNative,
+                               Elf32_Shdr_NonNative,
+                               Elf32_Chdr_NonNative,
+                               Elf32_Sym_NonNative,
+                               Elf32_Syminfo_NonNative,
+                               Elf32_Rel_NonNative,
+                               Elf32_Rela_NonNative,
+                               Elf32_Phdr_NonNative,
+                               Elf32_Dyn_NonNative,
+                               Elf32_Verdef_NonNative,
+                               Elf32_Verdaux_NonNative,
+                               Elf32_Verneed_NonNative,
+                               Elf32_Vernaux_NonNative,
+                               Elf32_aux_t_NonNative,
+                               Elf32_Nhdr_NonNative,
+                               Elf32_Move_NonNative,
+                               Elf32_gptab_NonNative,
+                               Elf32_RegInfo_NonNative,
+                               Elf_Options_NonNative,
+                               Elf_Options_Hw_NonNative,
+                               Elf32_Lib_NonNative,
+                               Elf_MIPS_ABIFlags_v0_NonNative]
+
+NON_NATIVE_ELF64_STRUCTURES = [Elf64_Ehdr_NonNative,
+                               Elf64_Shdr_NonNative,
+                               Elf64_Chdr_NonNative,
+                               Elf64_Sym_NonNative,
+                               Elf64_Syminfo_NonNative,
+                               Elf64_Rel_NonNative,
+                               Elf64_Rela_NonNative,
+                               Elf64_Phdr_NonNative,
+                               Elf64_Dyn_NonNative,
+                               Elf64_Verdef_NonNative,
+                               Elf64_Verdaux_NonNative,
+                               Elf64_Verneed_NonNative,
+                               Elf64_Vernaux_NonNative,
+                               Elf64_aux_t_NonNative,
+                               Elf64_Nhdr_NonNative,
+                               Elf64_Move_NonNative,
+                               Elf32_gptab_NonNative,
+                               Elf32_RegInfo_NonNative,
+                               Elf_Options_NonNative,
+                               Elf_Options_Hw_NonNative,
+                               Elf64_Lib_NonNative,
+                               Elf_MIPS_ABIFlags_v0_NonNative]
 
