@@ -490,215 +490,215 @@ class Elf64_Dyn_NonNative(NonNativeStructure, NiceHexFieldRepr, CtypesByteLevelM
 
 
 Elf32_Ehdr_NonNative = new_class('Elf32_Ehdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf32_Ehdr_NonNative._fields_ = Elf32_Ehdr._fields_.copy()
 
 Elf32_Chdr_NonNative = new_class('Elf32_Chdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf32_Chdr_NonNative._fields_ = Elf32_Chdr._fields_.copy()
 
 Elf32_Lib_NonNative = new_class('Elf32_Lib_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                bases=(NonNativeStructure,
+                                       NiceHexFieldRepr,
+                                       CtypesByteLevelManipulation))
 Elf32_Lib_NonNative._fields_ = Elf32_Lib._fields_.copy()
 
 Elf32_Move_NonNative = new_class('Elf32_Move_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf32_Move_NonNative._fields_ = Elf32_Move._fields_.copy()
 
 Elf32_Nhdr_NonNative = new_class('Elf32_Nhdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf32_Nhdr_NonNative._fields_ = Elf32_Nhdr._fields_.copy()
 
 Elf32_Phdr_NonNative = new_class('Elf32_Phdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf32_Phdr_NonNative._fields_ = Elf32_Phdr._fields_.copy()
 
 Elf32_Rel_NonNative = new_class('Elf32_Rel_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                bases=(NonNativeStructure,
+                                       NiceHexFieldRepr,
+                                       CtypesByteLevelManipulation))
 Elf32_Rel_NonNative._fields_ = Elf32_Rel._fields_.copy()
 
 Elf32_Rela_NonNative = new_class('Elf32_Rela_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf32_Rela_NonNative._fields_ = Elf32_Rela._fields_.copy()
 
 Elf32_Shdr_NonNative = new_class('Elf32_Shdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf32_Shdr_NonNative._fields_ = Elf32_Shdr._fields_.copy()
 
 Elf32_Sym_NonNative = new_class('Elf32_Sym_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                bases=(NonNativeStructure,
+                                       NiceHexFieldRepr,
+                                       CtypesByteLevelManipulation))
 Elf32_Sym_NonNative._fields_ = Elf32_Sym._fields_.copy()
 
 Elf32_Syminfo_NonNative = new_class('Elf32_Syminfo_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf32_Syminfo_NonNative._fields_ = Elf32_Syminfo._fields_.copy()
 
 Elf32_Verdaux_NonNative = new_class('Elf32_Verdaux_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf32_Verdaux_NonNative._fields_ = Elf32_Verdaux._fields_.copy()
 
 Elf32_Verdef_NonNative = new_class('Elf32_Verdef_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                   bases=(NonNativeStructure,
+                                          NiceHexFieldRepr,
+                                          CtypesByteLevelManipulation))
 Elf32_Verdef_NonNative._fields_ = Elf32_Verdef._fields_.copy()
 
 Elf32_Vernaux_NonNative = new_class('Elf32_Vernaux_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf32_Vernaux_NonNative._fields_ = Elf32_Vernaux._fields_.copy()
 
 Elf32_Verneed_NonNative = new_class('Elf32_Verneed_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf32_Verneed_NonNative._fields_ = Elf32_Verneed._fields_.copy()
 
 
 Elf64_Ehdr_NonNative = new_class('Elf64_Ehdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf64_Ehdr_NonNative._fields_ = Elf64_Ehdr._fields_.copy()
 
 
 Elf64_Chdr_NonNative = new_class('Elf64_Chdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf64_Chdr_NonNative._fields_ = Elf64_Chdr._fields_.copy()
 
 Elf64_Lib_NonNative = new_class('Elf64_Lib_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                bases=(NonNativeStructure,
+                                       NiceHexFieldRepr,
+                                       CtypesByteLevelManipulation))
 Elf64_Lib_NonNative._fields_ = Elf64_Lib._fields_.copy()
 
 Elf64_Move_NonNative = new_class('Elf64_Move_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf64_Move_NonNative._fields_ = Elf64_Move._fields_.copy()
 
 Elf64_Nhdr_NonNative = new_class('Elf64_Nhdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf64_Nhdr_NonNative._fields_ = Elf64_Nhdr._fields_.copy()
 
 Elf64_Phdr_NonNative = new_class('Elf64_Phdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf64_Phdr_NonNative._fields_ = Elf64_Phdr._fields_.copy()
 
 Elf64_Rel_NonNative = new_class('Elf64_Rel_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                bases=(NonNativeStructure,
+                                       NiceHexFieldRepr,
+                                       CtypesByteLevelManipulation))
 Elf64_Rel_NonNative._fields_ = Elf64_Rel._fields_.copy()
 
 Elf64_Rela_NonNative = new_class('Elf64_Rela_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf64_Rela_NonNative._fields_ = Elf64_Rela._fields_.copy()
 
 Elf64_Shdr_NonNative = new_class('Elf64_Shdr_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                 bases=(NonNativeStructure,
+                                        NiceHexFieldRepr,
+                                        CtypesByteLevelManipulation))
 Elf64_Shdr_NonNative._fields_ = Elf64_Shdr._fields_.copy()
 
 Elf64_Sym_NonNative = new_class('Elf64_Sym_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                bases=(NonNativeStructure,
+                                       NiceHexFieldRepr,
+                                       CtypesByteLevelManipulation))
 Elf64_Sym_NonNative._fields_ = Elf64_Sym._fields_.copy()
 
 Elf64_Syminfo_NonNative = new_class('Elf64_Syminfo_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf64_Syminfo_NonNative._fields_ = Elf64_Syminfo._fields_.copy()
 
 Elf64_Verdaux_NonNative = new_class('Elf64_Verdaux_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf64_Verdaux_NonNative._fields_ = Elf64_Verdaux._fields_.copy()
 
 Elf64_Verdef_NonNative = new_class('Elf64_Verdef_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                   bases=(NonNativeStructure,
+                                          NiceHexFieldRepr,
+                                          CtypesByteLevelManipulation))
 Elf64_Verdef_NonNative._fields_ = Elf64_Verdef._fields_.copy()
 
 Elf64_Vernaux_NonNative = new_class('Elf64_Vernaux_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf64_Vernaux_NonNative._fields_ = Elf64_Vernaux._fields_.copy()
 
 Elf64_Verneed_NonNative = new_class('Elf64_Verneed_NonNative',
-                   bases=(NonNativeStructure,
-                          NiceHexFieldRepr,
-                          CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf64_Verneed_NonNative._fields_ = Elf64_Verneed._fields_.copy()
 
 Elf32_gptab_NonNative = new_class('Elf32_gptab_NonNative',
-                          bases=(NonNativeStructure,
-                                 NiceHexFieldRepr,
-                                 CtypesByteLevelManipulation))
+                                  bases=(NonNativeStructure,
+                                         NiceHexFieldRepr,
+                                         CtypesByteLevelManipulation))
 Elf32_gptab_NonNative._fields_ = Elf32_gptab._fields_.copy()
 
 Elf32_RegInfo_NonNative = new_class('Elf32_RegInfo_NonNative',
-                          bases=(NonNativeStructure,
-                                 NiceHexFieldRepr,
-                                 CtypesByteLevelManipulation))
+                                    bases=(NonNativeStructure,
+                                           NiceHexFieldRepr,
+                                           CtypesByteLevelManipulation))
 Elf32_RegInfo_NonNative._fields_ = Elf32_RegInfo._fields_.copy()
 
 Elf_Options_NonNative = new_class('Elf_Options_NonNative',
-                          bases=(NonNativeStructure,
-                                 NiceHexFieldRepr,
-                                 CtypesByteLevelManipulation))
+                                  bases=(NonNativeStructure,
+                                         NiceHexFieldRepr,
+                                         CtypesByteLevelManipulation))
 Elf_Options_NonNative._fields_ = Elf_Options._fields_.copy()
 
 Elf_Options_Hw_NonNative = new_class('Elf_Options_Hw_NonNative',
-                          bases=(NonNativeStructure,
-                                 NiceHexFieldRepr,
-                                 CtypesByteLevelManipulation))
+                                     bases=(NonNativeStructure,
+                                            NiceHexFieldRepr,
+                                            CtypesByteLevelManipulation))
 Elf_Options_Hw_NonNative._fields_ = Elf_Options_Hw._fields_.copy()
 
 Elf_MIPS_ABIFlags_v0_NonNative = new_class('Elf_MIPS_ABIFlags_v0_NonNative',
-                          bases=(NonNativeStructure,
-                                 NiceHexFieldRepr,
-                                 CtypesByteLevelManipulation))
+                                           bases=(NonNativeStructure,
+                                                  NiceHexFieldRepr,
+                                                  CtypesByteLevelManipulation))
 Elf_MIPS_ABIFlags_v0_NonNative._fields_ = Elf_MIPS_ABIFlags_v0._fields_.copy()
 
 
