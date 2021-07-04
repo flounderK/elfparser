@@ -8,6 +8,7 @@ from . import constexpr
 from ctypes import c_ubyte, sizeof, addressof, cast, POINTER, create_string_buffer, string_at
 import _ctypes
 import _io
+import io
 
 
 def pull_stringtable(elf_array, shdr):
@@ -33,29 +34,102 @@ def string_at_offset(stringtable, offset=0, cast_to_str=True):
 
 
 class ElfParser:
-    def __init__(self, file):
-        if isinstance(file, (_io._TextIOWrapper)) or issubclass(file.__class__, (_io._TextIOBase)):
+    def __init__(self, file, lazy_load=True):
+        if isinstance(file, (io.TextIOWrapper)) or issubclass(file.__class__, (_io._TextIOBase)):
             self.file = file.name
-            self.fd = file
+            self._fd = file
+            self.__original_offset = self._fd.tell()
         elif isinstance(file, str):
             self.file = file
-            self.fd = open(file, "rb")
+            self._fd = open(file, "rb")
+            self.__original_offset = 0
         else:
-            raise NotImplementedError()
+            raise NotImplementedError("file must be a filepath or ")
+
+        self._lazy_load = lazy_load
+        if self._lazy_load is False:
+            e = self._fd.read()
+            self.__elf_array = (c_ubyte*len(e)).from_buffer(bytearray(e))
+        else:
+            self.__elf_array = None
+
+        self._parse_ident()
+        self._apply_elf_structures()
+        self._parse_ehdr()
+
+    def __get_c_array_at_offset(self, offset, size, reset_pos=True):
+        memory_class = (c_ubyte*size)
+        if self._lazy_load is True:
+            orig_pos = self._fd.tell()
+            self._fd.seek(self.__original_offset + offset)
+            buffer = memory_class.from_buffer(bytearray(self._fd.read(size)))
+            if reset_pos is True:
+                self._fd.seek(orig_pos)
+        else:
+            buffer = memory_class.from_buffer(self.__elf_array, offset)
+
+        return buffer
 
     def _parse_ident(self):
-        orig_off = self.fd.tell()
-        ident_buf_class = c_ubyte*sizeof(elfstructs.Elf_Ident)
-        ident_buf = ident_buf_class.from_buffer(bytearray(self.fd.read(sizeof(elfstructs.Elf_Ident))))
+        ident_buf = self.__get_c_array_at_offset(self.__original_offset, sizeof(elfstructs.Elf_Ident))
+        # ident_buf_class = c_ubyte*sizeof(elfstructs.Elf_Ident)
+        # ident_buf = ident_buf_class.from_buffer(bytearray(self._fd.read(sizeof(elfstructs.Elf_Ident))))
         ident = cast(ident_buf, POINTER(elfstructs.Elf_Ident)).contents
-        self.fd.seek(orig_off)
         # confirm elf magic
-        if ident.ei_elfmag != elfmacros.ELFMAG:
-            raise Exception()
+        if bytes(ident.ei_elfmag) != elfmacros.ELFMAG:
+            raise Exception("Elf magic not present")
 
-        elfclass = elfenums.ELFCLASS(ident.ei_class)
-        endianness = elfenums.ELFDATA(ident.ei_data)
-        osabi = elfenums.ELFOSABI(ident.ei_osabi)
+        self.elfclass = elfenums.ELFCLASS(ident.ei_class)
+        if self.elfclass == elfenums.ELFCLASS.ELFCLASS32:
+            self.bits = 32
+        elif self.elfclass == elfenums.ELFCLASS.ELFCLASS64:
+            self.bits = 64
+        else:
+            raise Exception("Invalid ELFCLASS")
+        self._endianness_flag = elfenums.ELFDATA(ident.ei_data)
+        if self._endianness_flag == elfenums.ELFDATA.ELFDATA2LSB:
+            self.endianness = "little"
+        elif self._endianness_flag == elfenums.ELFDATA.ELFDATA2MSB:
+            self.endianness = "big"
+        else:
+            raise Exception("Invalid ELFDATA")
+        self.osabi = elfenums.ELFOSABI(ident.ei_osabi)
+
+    def _apply_elf_structures(self):
+        # get appropriate elf structures for the bitness and endianness found
+        elf_structures = elfstructs.get_elf_structures(self.bits, self.endianness)
+        prefix = "_"
+        for k, v in elf_structures.items():
+            # store the basic elf structure classes
+            setattr(self, prefix + k, v)
+            # create buffers/backings for every basic elf class
+            memory_class = c_ubyte*sizeof(v)
+            setattr(self, prefix + k + '_memory_class', memory_class)
+
+    def _parse_ehdr(self):
+        """Parse ElfXX_Ehdr"""
+        ehdr_buf = self.__get_c_array_at_offset(self.__original_offset, sizeof(self._ElfW_Ehdr_memory_class))
+        ehdr = self._ehdr = cast(ehdr_buf, POINTER(self._ElfW_Ehdr)).contents
+        self.e_type = elfenums.ET(ehdr.e_type)
+        self.e_machine = elfenums.EM(ehdr.e_machine)
+
+        # setup section header array
+        shdr_array_memory_class = self._ElfW_Shdr*ehdr.e_shnum
+        # get backing of the whole section header array
+        shdr_array_buffer = self.__get_c_array_at_offset(ehdr.e_shoff, ehdr.e_shentsize*ehdr.e_shnum)
+        self._shdr_array = cast(shdr_array_buffer, POINTER(shdr_array_memory_class)).contents
+
+        # string table for section header names
+        shstrshdr = self._shdr_array[ehdr.e_shstrndx]
+        self._shstrtab = self.__get_c_array_at_offset(shstrshdr.sh_offset, shstrshdr.sh_size)
+
+        # setup progam header array / segment array
+        phdr_array_memory_class = self._ElfW_Phdr*ehdr.e_phnum
+        phdr_array_buffer = self.__get_c_array_at_offset(ehdr.e_phoff, ehdr.e_phentsize*ehdr.e_phnum)
+        self._phdr_array = cast(phdr_array_buffer, POINTER(phdr_array_memory_class)).contents
+
+
+
 
 
 
