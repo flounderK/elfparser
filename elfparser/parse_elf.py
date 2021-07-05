@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from . import instantiate_ctype_with_backing, set_backing_value, set_backing_value_from_elf_offset
 from . import elfstructs
 from . import elfenums
 from . import elfmacros
@@ -193,8 +192,8 @@ class ElfParser:
     def _parse_symbol_entries(self):
         extra_fields = ['name', 'type', 'binding', 'visibility']
         sym_tuple = namedtuple('Symbol', extra_fields + list(dict(self._ElfW_Sym._fields_).keys()))
-        for sym in sym_array:
-            symbol_name = string_at_offset(main_string_table, sym.st_name)
+        for sym in self._sym_array:
+            symbol_name = string_at_offset(self._string_table, sym.st_name)
             info_raw = sym.st_info
             # decode sym type and binding
             symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
@@ -212,7 +211,7 @@ class ElfParser:
 
         # not sure if these ever actually have values set, might need to re evaluate
         for sym in self._dyn_sym_array:
-            symbol_name = string_at_offset(dynamic_string_table, sym.st_name)
+            symbol_name = string_at_offset(self._dynamic_string_table, sym.st_name)
             info_raw = sym.st_info
             # decode sym type and binding
             symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
@@ -231,7 +230,7 @@ class ElfParser:
     def _parse_phdrs(self):
         extra_fields = ['type', 'flags']
         phdr_tuple = namedtuple('Phdr', extra_fields + list(dict(self._ElfW_Phdr._fields_).keys()))
-        for phdr in phdr_array:
+        for phdr in self._phdr_array:
             phdr_type = elfenums.PT(phdr.p_type)
             phdr_flags = elfenums.PF(phdr.p_flags)
             phdr_dict = dict(phdr)
