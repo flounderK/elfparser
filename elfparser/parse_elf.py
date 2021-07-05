@@ -261,4 +261,5 @@ class ElfParser:
         #     print(string_at_offset(dynamic_string_table, dyn_sym_array[rela_sym].st_name))
         #     # print(rela_type)
         #     print(rela)
+        ...
 
