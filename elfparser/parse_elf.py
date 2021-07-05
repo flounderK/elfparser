@@ -53,6 +53,9 @@ class ElfParser:
         self.symbol_entries = []
         self.dynamic_entries = []
         self.relocation_entries = []
+        self.program_headers = []
+        self.needed_libraries = []
+        self.dynamic_flags = 0
 
         self._lazy_load = lazy_load
         if self._lazy_load is False:
@@ -66,6 +69,9 @@ class ElfParser:
         self._parse_ehdr()
         self._parse_shdrs()
         self._parse_symbol_entries()
+        self._parse_phdrs()
+        self._parse_dyn_entries()
+        self._parse_rela_entries()
 
     def __get_c_array_at_offset(self, offset, size, reset_pos=True):
         memory_class = (c_ubyte*size)
@@ -204,145 +210,55 @@ class ElfParser:
             symbol_entry_dict['visibility'] = symbol_visibility
             self.symbol_entries.append(sym_tuple(**symbol_entry_dict))
 
+        # not sure if these ever actually have values set, might need to re evaluate
+        for sym in self._dyn_sym_array:
+            symbol_name = string_at_offset(dynamic_string_table, sym.st_name)
+            info_raw = sym.st_info
+            # decode sym type and binding
+            symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
+            symbol_binding = elfenums.STB(constexpr.ELF64_ST_BIND(info_raw))
+            symbol_visibility = elfenums.STV(sym.st_other)
+            if sym.st_value != 0:
+                self.symbols['dyn.' + symbol_name] = sym.st_value
 
+            symbol_entry_dict = dict(sym)
+            symbol_entry_dict['name'] = symbol_name
+            symbol_entry_dict['type'] = symbol_type
+            symbol_entry_dict['binding'] = symbol_binding
+            symbol_entry_dict['visibility'] = symbol_visibility
+            self.symbol_entries.append(sym_tuple(**symbol_entry_dict))
 
+    def _parse_phdrs(self):
+        extra_fields = ['type', 'flags']
+        phdr_tuple = namedtuple('Phdr', extra_fields + list(dict(self._ElfW_Phdr._fields_).keys()))
+        for phdr in phdr_array:
+            phdr_type = elfenums.PT(phdr.p_type)
+            phdr_flags = elfenums.PF(phdr.p_flags)
+            phdr_dict = dict(phdr)
+            phdr_dict['type'] = phdr_type
+            phdr_dict['flags'] = phdr_flags
+            self.program_headers.append(phdr_tuple(**phdr_dict))
 
+    def _parse_dyn_entries(self):
+        extra_fields = ['type']
+        dyn_tuple = namedtuple('Dyn', extra_fields + list(dict(self._ElfW_Dyn._fields_).keys()))
+        for d in self._dyn_array:
+            tag_type = elfenums.DT(d.d_tag)
+            if tag_type == elfenums.DT.DT_NEEDED:
+                self.needed_libraries.append(string_at_offset(self._dynamic_string_table, d.d_un.d_ptr))
+            elif tag_type == elfenums.DT.DT_FLAGS_1:
+                self.dynamic_flags |= elfenums.DF_1(d.d_un.d_val)
 
+            dyn_dict = dict(d)
+            dyn_dict['type'] = tag_type
+            self.dynamic_entries.append(dyn_tuple(**dyn_dict))
 
-with open("chal", "rb") as f:
-    ident_buf_class = c_ubyte*sizeof(elfstructs.Elf_Ident)
-    ident_buf = ident_buf_class.from_buffer(bytearray(f.read(sizeof(elfstructs.Elf_Ident))))
-    ident = cast(ident_buf, POINTER(elfstructs.Elf_Ident)).contents
-    f.seek(0)
-    e = f.read()
-
-elf_array = (c_ubyte*len(e)).from_buffer(bytearray(e))
-
-ehdr = cast(elf_array, POINTER(elfstructs.Elf64_Ehdr)).contents
-
-phdr_array_class = (ehdr.e_phnum * elfstructs.Elf64_Phdr)
-phdr_array = phdr_array_class.from_buffer(elf_array, ehdr.e_phoff)
-
-shdr_array_class = (ehdr.e_shnum * elfstructs.Elf64_Shdr)
-shdr_array = shdr_array_class.from_buffer(elf_array, ehdr.e_shoff)
-
-# get the section header for the section header string table
-shstr = shdr_array[ehdr.e_shstrndx]
-# section_header_string_table = bytes(elf_array[shstr.sh_offset:shstr.sh_offset + shstr.sh_size])
-section_header_string_table = (c_ubyte*shstr.sh_size).from_buffer(elf_array, shstr.sh_offset)
-
-sym_class = (c_ubyte*sizeof(elfstructs.Elf64_Sym))
-dyn_class = (c_ubyte*sizeof(elfstructs.Elf64_Dyn))
-
-# pull out the section header string table
-# section_names = [i.decode() for i in section_header_string_table.split(b'\x00') if i != b'']
-
-strtab_shdr = None
-dynsym_shdr = None
-dynstr_shdr = None
-symtab_shdr = None
-dynamic_shdr = None
-rela_shdr = None
-rel_shdr = None
-
-print("section headers")
-for shdr in shdr_array:
-    section_type = elfenums.SHT(shdr.sh_type)
-    print(section_type)
-    section_name = string_at_offset(section_header_string_table, shdr.sh_name)
-    if section_type == elfenums.SHT.SHT_STRTAB and section_name == '.strtab':
-        strtab_shdr = shdr
-        main_string_table = (c_ubyte*shdr.sh_size).from_buffer(elf_array, shdr.sh_offset)
-    elif section_type == elfenums.SHT.SHT_STRTAB and section_name == '.dynstr':
-        dynstr_shdr = shdr
-        dynamic_string_table = (c_ubyte*shdr.sh_size).from_buffer(elf_array, shdr.sh_offset)
-    elif section_type == elfenums.SHT.SHT_DYNSYM and section_name == '.dynsym':
-        dynsym_shdr = shdr
-        dyn_sym_array_class = elfstructs.Elf64_Sym * (shdr.sh_size // sizeof(elfstructs.Elf64_Sym))
-        dyn_sym_array = dyn_sym_array_class.from_buffer(elf_array, dynsym_shdr.sh_offset)
-    elif section_type == elfenums.SHT.SHT_SYMTAB and section_name == '.symtab':
-        symtab_shdr = shdr
-        sym_array_class = elfstructs.Elf64_Sym * (shdr.sh_size // sizeof(elfstructs.Elf64_Sym))
-        sym_array = sym_array_class.from_buffer(elf_array, symtab_shdr.sh_offset)
-    elif section_type == elfenums.SHT.SHT_DYNAMIC and section_name == '.dynamic':
-        dynamic_shdr = shdr
-        dyn_array_class = elfstructs.Elf64_Dyn * (shdr.sh_size // sizeof(dyn_class))
-        dyn_array = dyn_array_class.from_buffer(elf_array, shdr.sh_offset)
-    elif section_type == elfenums.SHT.SHT_RELA:
-        rela_shdr = shdr
-        rela_array_class = elfstructs.Elf64_Rela * (shdr.sh_size // sizeof(elfstructs.Elf64_Rela))
-        rela_array = rela_array_class.from_buffer(elf_array, shdr.sh_offset)
-    elif section_type == elfenums.SHT.SHT_REL:
-        rel_shdr = shdr
-        rel_array_class = elfstructs.Elf64_Rel * (shdr.sh_size // sizeof(elfstructs.Elf64_Rel))
-        rel_array = rel_array_class.from_buffer(elf_array, shdr.sh_offset)
-
-
-    print(section_name)
-    print(shdr)
-    print()
-
-
-print("regular syms")
-for sym in sym_array:
-    symbol_name = string_at_offset(main_string_table, sym.st_name)
-    info_raw = sym.st_info
-    # decode sym type and binding
-    symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
-    symbol_binding = elfenums.STB(constexpr.ELF64_ST_BIND(info_raw))
-    symbol_visibility = elfenums.STV(sym.st_other)
-    print(symbol_name)
-    print(symbol_type)
-    print(symbol_binding)
-    print(symbol_visibility)
-    print(sym)
-    print()
-
-
-print("dynamic syms")
-
-for sym in dyn_sym_array:
-    symbol_name = string_at_offset(dynamic_string_table, sym.st_name)
-    info_raw = sym.st_info
-    # decode sym type and binding
-    symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
-    symbol_binding = elfenums.STB(constexpr.ELF64_ST_BIND(info_raw))
-    symbol_visibility = elfenums.STV(sym.st_other)
-    print(symbol_name)
-    print(symbol_type)
-    print(symbol_binding)
-    print(symbol_visibility)
-    print(sym)
-    print()
-
-print("dynamic entries")
-
-for d in dyn_array:
-    tag_type = elfenums.DT(d.d_tag)
-    print(tag_type)
-    print(hex(d.d_un.d_val))
-    print(d)
-    print()
-
-print("phdr entries")
-
-for phdr in phdr_array:
-    phdr_type = elfenums.PT(phdr.p_type)
-    phdr_flags = elfenums.PF(phdr.p_flags)
-    print(phdr_type)
-    print(phdr_flags)
-    print(phdr)
-    print()
-
-print("rela entries")
-
-for rela in rela_array:
-    rela_info = rela.r_info
-    rela_sym = constexpr.ELF64_R_SYM(rela_info)
-    # rela_type = elfenums.R(constexpr.ELF64_R_TYPE(rela_info))
-    print(string_at_offset(dynamic_string_table, dyn_sym_array[rela_sym].st_name))
-    # print(rela_type)
-    print(rela)
-    print()
-
+    def _parse_rela_entries(self):
+        # for rela in rela_array:
+        #     rela_info = rela.r_info
+        #     rela_sym = constexpr.ELF64_R_SYM(rela_info)
+        #     # rela_type = elfenums.R(constexpr.ELF64_R_TYPE(rela_info))
+        #     print(string_at_offset(dynamic_string_table, dyn_sym_array[rela_sym].st_name))
+        #     # print(rela_type)
+        #     print(rela)
 

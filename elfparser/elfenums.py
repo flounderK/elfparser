@@ -61,7 +61,7 @@ class AT(enum.IntEnum):
     AT_UID = 0xb
 
 
-class DF(enum.IntFlag):
+class DF_1(enum.IntFlag):
     DF_1_CONFALT = 0x2000
     DF_1_DIRECT = 0x100
     DF_1_DISPRELDNE = 0x8000
@@ -93,6 +93,9 @@ class DF(enum.IntFlag):
     DF_1_SYMINTPOSE = 0x800000
     DF_1_TRANS = 0x200
     DF_1_WEAKFILTER = 0x20000000
+
+
+class DF(enum.IntFlag):
     DF_BIND_NOW = 0x8
     DF_ORIGIN = 0x1
     DF_P1_GROUPPERM = 0x2
