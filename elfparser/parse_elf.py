@@ -49,12 +49,14 @@ class ElfParser:
         self.sections = []
         self.segments = []
         self.symbols = {}
+        self.dyn_symbols = {}
         self.symbol_entries = []
         self.dynamic_entries = []
         self.relocation_entries = []
         self.program_headers = []
         self.needed_libraries = []
         self.dynamic_flags = 0
+        self.relocation_enum = None
 
         self._lazy_load = lazy_load
         if self._lazy_load is False:
@@ -65,7 +67,9 @@ class ElfParser:
 
         self._parse_ident()
         self._apply_elf_structures()
+        self._constexpr = constexpr.ELF32_CONSTEXPR if self.bits == 32 else constexpr.ELF64_CONSTEXPR
         self._parse_ehdr()
+        self.relocation_enum = self._get_relocation_enum_for_machine()
         self._parse_shdrs()
         self._parse_symbol_entries()
         self._parse_phdrs()
@@ -217,8 +221,8 @@ class ElfParser:
             symbol_type = elfenums.STT(constexpr.ELF64_ST_TYPE(info_raw))
             symbol_binding = elfenums.STB(constexpr.ELF64_ST_BIND(info_raw))
             symbol_visibility = elfenums.STV(sym.st_other)
-            if sym.st_value != 0:
-                self.symbols['dyn.' + symbol_name] = sym.st_value
+            # if sym.st_value != 0:
+            self.dyn_symbols[symbol_name] = sym.st_value
 
             symbol_entry_dict = dict(sym)
             symbol_entry_dict['name'] = symbol_name
@@ -252,13 +256,24 @@ class ElfParser:
             dyn_dict['type'] = tag_type
             self.dynamic_entries.append(dyn_tuple(**dyn_dict))
 
+    def _get_relocation_enum_for_machine(self):
+        """There are lots of different relocation architectures supported,
+        but even more machine types. """
+        for k, v in elfenums.MACHINE_TYPE_TO_RELOCATION_TYPE_MAPPING.items():
+            if self.e_machine in k:
+                return v
+
     def _parse_rela_entries(self):
-        # for rela in rela_array:
-        #     rela_info = rela.r_info
-        #     rela_sym = constexpr.ELF64_R_SYM(rela_info)
-        #     # rela_type = elfenums.R(constexpr.ELF64_R_TYPE(rela_info))
-        #     print(string_at_offset(dynamic_string_table, dyn_sym_array[rela_sym].st_name))
-        #     # print(rela_type)
-        #     print(rela)
-        ...
+        extra_fields = ['name', 'type']
+        rela_tuple = namedtuple('Rela', extra_fields + list(dict(self._ElfW_Rela._fields_).keys()) + ['r_sym'])
+        for rela in self._rela_array:
+            rela_info = rela.r_info
+            rela_sym = self._constexpr['ELFW_R_SYM'](rela_info)
+            rela_type = self.relocation_enum(self._constexpr['ELFW_R_TYPE'](rela_info))
+            name = string_at_offset(self._dynamic_string_table, self._dyn_sym_array[rela_sym].st_name)
+            rela_dict = dict(rela)
+            rela_dict['name'] = name
+            rela_dict['type'] = rela_type
+            rela_dict['r_sym'] = rela_sym
+            self.relocation_entries.append(rela_tuple(**rela_dict))
 

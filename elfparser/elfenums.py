@@ -3027,3 +3027,38 @@ class VER(enum.IntEnum):
     VER_NEED_NONE = 0x0
     VER_NEED_NUM = 0x2
 
+
+# TODO: this isn't complete, it just covers a lot right now
+MACHINE_TYPE_TO_RELOCATION_TYPE_MAPPING = {
+    (EM.EM_386,): R_386,
+    (EM.EM_S390,): R_390,
+    (EM.EM_68K,): R_68K,
+    (EM.EM_AARCH64,): R_AARCH64,
+    (EM.EM_ALPHA,): R_ALPHA,
+    (EM.EM_ARC, EM.EM_ARCA, EM.EM_ARCV2, EM.EM_ARC_A5,): R_ARC,
+    (EM.EM_ARM,): R_ARM,
+    (EM.EM_BPF,): R_BPF,
+    (EM.EM_CSKY,): R_CKCORE,
+    (EM.EM_CRIS,): R_CRIS,
+    (EM.EM_IA_64,): R_IA64,
+    (EM.EM_M32R,): R_M32R,
+    (EM.EM_METAG,): R_METAG,
+    (EM.EM_MICROBLAZE,): R_MICROBLAZE,
+    (EM.EM_MIPS,): R_MIPS,
+    (EM.EM_MN10300,): R_MN10300,
+    (EM.EM_NDS32,): R_NDS32,
+    (EM.EM_ALTERA_NIOS2,): R_NIOS2,
+    (EM.EM_PARISC,): R_PARISC,
+    (EM.EM_PPC,): R_PPC,
+    (EM.EM_PPC64,): R_PPC64,
+    (EM.EM_RISCV,): R_RISCV,
+    (EM.EM_SH,): R_SH,
+    (EM.EM_SPARC,): R_SPARC,
+    (EM.EM_TILEGX,): R_TILEGX,
+    (EM.EM_TILEPRO,): R_TILEPRO,
+    (EM.EM_X86_64,): R_X86_64,
+
+
+
+}
+
