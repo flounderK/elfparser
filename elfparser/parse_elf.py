@@ -57,6 +57,9 @@ class ElfParser:
         self.needed_libraries = []
         self.dynamic_flags = 0
         self.relocation_enum = None
+        self.address = 0
+        self.got = None
+        self.got_plt = None
 
         self._lazy_load = lazy_load
         if self._lazy_load is False:
@@ -75,6 +78,17 @@ class ElfParser:
         self._parse_phdrs()
         self._parse_dyn_entries()
         self._parse_rela_entries()
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, value):
+        for k in self.symbols.keys():
+            self.symbols[k] = self.symbols[k] - self._address + value
+
+        self._address = value
 
     def __get_c_array_at_offset(self, offset, size, reset_pos=True):
         memory_class = (c_ubyte*size)
@@ -186,12 +200,18 @@ class ElfParser:
                 rel_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
                                                                 shdr.sh_size)
                 self._rel_array = cast(rel_array_buffer, POINTER(rel_array_memory_class)).contents
+            elif section_type == elfenums.SHT.SHT_PROGBITS and section_name == '.got':
+                self.got = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                        shdr.sh_size)
+            elif section_type == elfenums.SHT.SHT_PROGBITS and section_name == '.got.plt':
+                self.got_plt = self.__get_c_array_at_offset(shdr.sh_offset,
+                                                        shdr.sh_size)
 
             section_dict = dict(shdr)
             section_dict['name'] = section_name
             section_dict['type'] = section_type
 
-            self.sections.append(section_tuple(**section_dict))
+            self.sections.append(elfstructs.Shdr(**section_dict))
 
     def _parse_symbol_entries(self):
         extra_fields = ['name', 'type', 'binding', 'visibility']
@@ -211,7 +231,7 @@ class ElfParser:
             symbol_entry_dict['type'] = symbol_type
             symbol_entry_dict['binding'] = symbol_binding
             symbol_entry_dict['visibility'] = symbol_visibility
-            self.symbol_entries.append(sym_tuple(**symbol_entry_dict))
+            self.symbol_entries.append(elfstructs.Sym(**symbol_entry_dict))
 
         # not sure if these ever actually have values set, might need to re evaluate
         for sym in self._dyn_sym_array:
@@ -229,7 +249,7 @@ class ElfParser:
             symbol_entry_dict['type'] = symbol_type
             symbol_entry_dict['binding'] = symbol_binding
             symbol_entry_dict['visibility'] = symbol_visibility
-            self.symbol_entries.append(sym_tuple(**symbol_entry_dict))
+            self.symbol_entries.append(elfstructs.Sym(**symbol_entry_dict))
 
     def _parse_phdrs(self):
         extra_fields = ['type', 'flags']
@@ -240,7 +260,7 @@ class ElfParser:
             phdr_dict = dict(phdr)
             phdr_dict['type'] = phdr_type
             phdr_dict['flags'] = phdr_flags
-            self.program_headers.append(phdr_tuple(**phdr_dict))
+            self.program_headers.append(elfstructs.Phdr(**phdr_dict))
 
     def _parse_dyn_entries(self):
         extra_fields = ['type']
@@ -254,7 +274,7 @@ class ElfParser:
 
             dyn_dict = dict(d)
             dyn_dict['type'] = tag_type
-            self.dynamic_entries.append(dyn_tuple(**dyn_dict))
+            self.dynamic_entries.append(elfstructs.Dyn(**dyn_dict))
 
     def _get_relocation_enum_for_machine(self):
         """There are lots of different relocation architectures supported,
@@ -275,5 +295,5 @@ class ElfParser:
             rela_dict['name'] = name
             rela_dict['type'] = rela_type
             rela_dict['r_sym'] = rela_sym
-            self.relocation_entries.append(rela_tuple(**rela_dict))
+            self.relocation_entries.append(elfstructs.Rela(**rela_dict))
 
