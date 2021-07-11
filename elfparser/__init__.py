@@ -59,5 +59,5 @@ from . import elfenums
 from . import elfmacros
 from . import elfstructs
 from . import constexpr
-
+from . import arch_specific
 
