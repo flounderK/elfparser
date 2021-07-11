@@ -138,3 +138,77 @@ ELF64_CONSTEXPR = {
     "ELFW_ST_TYPE": ELF64_ST_TYPE,
     "ELFW_ST_VISIBILITY": ELF64_ST_VISIBILITY,
 }
+
+
+# elf machine const expressions
+
+def ARCH_DT(dt_arch, x):
+    getattr(dt_arch, '%s_%s' % (dt_arch.__name__, x)) - elfenums.DT.DT_LOPROC + elfenums.DT.DT_NUM
+
+
+def DT_PPC64(x):
+    return ARCH_DT(elfenums.DT_PPC64, x)
+
+
+def DT_PPC(x):
+    return ARCH_DT(elfenums.DT_PPC, x)
+
+
+def DT_IA_64(x):
+    return ARCH_DT(elfenums.DT_IA_64, x)
+
+
+def DT_ALPHA(x):
+    return ARCH_DT(elfenums.DT_ALPHA, x)
+
+
+def DT_AARCH64(x):
+    return ARCH_DT(elfenums.DT_AARCH64, x)
+
+
+def DT_MIPS(x):
+    return ARCH_DT(elfenums.DT_MIPS, x)
+
+
+def PPC_LO(v):
+    return ((v) & 0xffff)
+
+
+def PPC_HI(v):
+    return (((v) >> 16) & 0xffff)
+
+
+def PPC_HA(v):
+    return PPC_HI ((v) + 0x8000)
+
+
+def PPC_HIGHER(v):
+    return (((v) >> 32) & 0xffff)
+
+
+def PPC_HIGHERA(v):
+    return PPC_HIGHER ((v) + 0x8000)
+
+
+def PPC_HIGHEST(v):
+    return (((v) >> 48) & 0xffff)
+
+
+def PPC_HIGHESTA(v):
+    return PPC_HIGHEST ((v) + 0x8000)
+
+
+# sparc64
+def ELF64_R_TYPE_ID(info):
+    return ((info) & 0xff)
+
+def ELF64_R_TYPE_DATA(info):
+    return ((info) >> 8)
+
+
+def R_IA64_TYPE(R):
+    return  ((R) & -8)
+
+def R_IA64_FORMAT(R):
+    return ((R) & 7)
+
