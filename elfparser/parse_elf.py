@@ -211,7 +211,8 @@ class ElfParser:
             section_dict['name'] = section_name
             section_dict['type'] = section_type
 
-            self.sections.append(elfstructs.Shdr(**section_dict))
+            # self.sections.append(elfstructs.Shdr(**section_dict))
+            self.sections.append(section_tuple(**section_dict))
 
     def _parse_symbol_entries(self):
         extra_fields = ['name', 'type', 'binding', 'visibility']
@@ -231,7 +232,8 @@ class ElfParser:
             symbol_entry_dict['type'] = symbol_type
             symbol_entry_dict['binding'] = symbol_binding
             symbol_entry_dict['visibility'] = symbol_visibility
-            self.symbol_entries.append(elfstructs.Sym(**symbol_entry_dict))
+            # self.symbol_entries.append(elfstructs.Sym(**symbol_entry_dict))
+            self.symbol_entries.append(sym_tuple(**symbol_entry_dict))
 
         # not sure if these ever actually have values set, might need to re evaluate
         for sym in self._dyn_sym_array:
@@ -260,7 +262,8 @@ class ElfParser:
             phdr_dict = dict(phdr)
             phdr_dict['type'] = phdr_type
             phdr_dict['flags'] = phdr_flags
-            self.program_headers.append(elfstructs.Phdr(**phdr_dict))
+            # self.program_headers.append(elfstructs.Phdr(**phdr_dict))
+            self.program_headers.append(phdr_tuple(**phdr_dict))
 
     def _parse_dyn_entries(self):
         extra_fields = ['type']
@@ -274,7 +277,8 @@ class ElfParser:
 
             dyn_dict = dict(d)
             dyn_dict['type'] = tag_type
-            self.dynamic_entries.append(elfstructs.Dyn(**dyn_dict))
+            # self.dynamic_entries.append(elfstructs.Dyn(**dyn_dict))
+            self.dynamic_entries.append(dyn_tuple(**dyn_dict))
 
     def _get_relocation_enum_for_machine(self):
         """There are lots of different relocation architectures supported,
@@ -295,5 +299,6 @@ class ElfParser:
             rela_dict['name'] = name
             rela_dict['type'] = rela_type
             rela_dict['r_sym'] = rela_sym
-            self.relocation_entries.append(elfstructs.Rela(**rela_dict))
+            # self.relocation_entries.append(elfstructs.Rela(**rela_dict))
+            self.relocation_entries.append(rela_tuple(**rela_dict))
 

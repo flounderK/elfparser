@@ -816,3 +816,55 @@ def get_elf_structures(bits, endianness):
             return NON_NATIVE_ELF64_STRUCTURES
     else:
         raise Exception("Bitness must be 32 or 64")
+
+
+class AccessorWrapper(dict):
+    def __getattr__(self, attr):
+        if attr in self:
+            return self[attr]
+
+        return getattr(super(), attr)
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
+
+    def __repr__(self):
+        rep = ', '.join(["%s=%#x" % (repr(k), v) if isinstance(v, int) else "%s=%s" % (repr(k), repr(v)) for k, v in self.items()])
+        return '%s(%s)' % (self.__class__.__name__, rep)
+
+
+class Ehdr(AccessorWrapper):
+    ...
+
+
+class Shdr(AccessorWrapper):
+    ...
+
+
+class Chdr(AccessorWrapper):
+    ...
+
+
+class Sym(AccessorWrapper):
+    ...
+
+
+class SymInfo(AccessorWrapper):
+    ...
+
+
+class Rel(AccessorWrapper):
+    ...
+
+
+class Rela(AccessorWrapper):
+    ...
+
+
+class Phdr(AccessorWrapper):
+    ...
+
+
+class Dyn(AccessorWrapper):
+    ...
+
