@@ -94,7 +94,7 @@ class ElfParser:
 
         self._address = value
 
-    def __get_c_array_at_offset(self, offset, size, reset_pos=True):
+    def _get_c_array_at_offset(self, offset, size, reset_pos=True):
         memory_class = (c_ubyte*size)
         if self._lazy_load is True:
             orig_pos = self._fd.tell()
@@ -108,7 +108,7 @@ class ElfParser:
         return buffer
 
     def _parse_ident(self):
-        ident_buf = self.__get_c_array_at_offset(self.__original_offset, sizeof(elfstructs.Elf_Ident))
+        ident_buf = self._get_c_array_at_offset(self.__original_offset, sizeof(elfstructs.Elf_Ident))
         # ident_buf_class = c_ubyte*sizeof(elfstructs.Elf_Ident)
         # ident_buf = ident_buf_class.from_buffer(bytearray(self._fd.read(sizeof(elfstructs.Elf_Ident))))
         ident = cast(ident_buf, POINTER(elfstructs.Elf_Ident)).contents
@@ -145,7 +145,7 @@ class ElfParser:
 
     def _parse_ehdr(self):
         """Parse ElfXX_Ehdr"""
-        ehdr_buf = self.__get_c_array_at_offset(self.__original_offset, sizeof(self._ElfW_Ehdr_memory_class))
+        ehdr_buf = self._get_c_array_at_offset(self.__original_offset, sizeof(self._ElfW_Ehdr_memory_class))
         ehdr = self._ehdr = cast(ehdr_buf, POINTER(self._ElfW_Ehdr)).contents
         self.e_type = elfenums.ET(ehdr.e_type)
         self.e_machine = elfenums.EM(ehdr.e_machine)
@@ -153,16 +153,16 @@ class ElfParser:
         # setup section header array
         shdr_array_memory_class = self._ElfW_Shdr*ehdr.e_shnum
         # get backing of the whole section header array
-        shdr_array_buffer = self.__get_c_array_at_offset(ehdr.e_shoff, ehdr.e_shentsize*ehdr.e_shnum)
+        shdr_array_buffer = self._get_c_array_at_offset(ehdr.e_shoff, ehdr.e_shentsize*ehdr.e_shnum)
         self._shdr_array = cast(shdr_array_buffer, POINTER(shdr_array_memory_class)).contents
 
         # string table for section header names
         shstrshdr = self._shdr_array[ehdr.e_shstrndx]
-        self._shstrtab = self.__get_c_array_at_offset(shstrshdr.sh_offset, shstrshdr.sh_size)
+        self._shstrtab = self._get_c_array_at_offset(shstrshdr.sh_offset, shstrshdr.sh_size)
 
         # setup progam header array / segment array
         phdr_array_memory_class = self._ElfW_Phdr*ehdr.e_phnum
-        phdr_array_buffer = self.__get_c_array_at_offset(ehdr.e_phoff, ehdr.e_phentsize*ehdr.e_phnum)
+        phdr_array_buffer = self._get_c_array_at_offset(ehdr.e_phoff, ehdr.e_phentsize*ehdr.e_phnum)
         self._phdr_array = cast(phdr_array_buffer, POINTER(phdr_array_memory_class)).contents
 
     def _parse_shdrs(self):
@@ -173,42 +173,42 @@ class ElfParser:
             section_type = elfenums.SHT(shdr.sh_type)
             section_name = string_at_offset(self._shstrtab, shdr.sh_name)
             if section_type == elfenums.SHT.SHT_STRTAB and section_name == '.strtab':
-                self._string_table = self.__get_c_array_at_offset(shdr.sh_offset,
+                self._string_table = self._get_c_array_at_offset(shdr.sh_offset,
                                                                   shdr.sh_size)
             elif section_type == elfenums.SHT.SHT_STRTAB and section_name == '.dynstr':
-                self._dynamic_string_table = self.__get_c_array_at_offset(shdr.sh_offset,
+                self._dynamic_string_table = self._get_c_array_at_offset(shdr.sh_offset,
                                                                           shdr.sh_size)
             elif section_type == elfenums.SHT.SHT_DYNSYM and section_name == '.dynsym':
                 dyn_sym_array_memory_class = self._ElfW_Sym * (shdr.sh_size // sizeof(self._ElfW_Sym))
-                dyn_sym_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                dyn_sym_array_buffer = self._get_c_array_at_offset(shdr.sh_offset,
                                                                     shdr.sh_size)
 
                 self._dyn_sym_array = cast(dyn_sym_array_buffer, POINTER(dyn_sym_array_memory_class)).contents
             elif section_type == elfenums.SHT.SHT_SYMTAB and section_name == '.symtab':
                 sym_array_memory_class = self._ElfW_Sym * (shdr.sh_size // sizeof(self._ElfW_Sym))
-                sym_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                sym_array_buffer = self._get_c_array_at_offset(shdr.sh_offset,
                                                                 shdr.sh_size)
                 self._sym_array = cast(sym_array_buffer, POINTER(sym_array_memory_class)).contents
             elif section_type == elfenums.SHT.SHT_DYNAMIC and section_name == '.dynamic':
                 dyn_array_memory_class = self._ElfW_Dyn * (shdr.sh_size // sizeof(self._ElfW_Dyn))
-                dyn_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                dyn_array_buffer = self._get_c_array_at_offset(shdr.sh_offset,
                                                                 shdr.sh_size)
                 self._dyn_array = cast(dyn_array_buffer, POINTER(dyn_array_memory_class)).contents
             elif section_type == elfenums.SHT.SHT_RELA:
                 rela_array_memory_class = self._ElfW_Rela * (shdr.sh_size // sizeof(self._ElfW_Rela))
-                rela_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                rela_array_buffer = self._get_c_array_at_offset(shdr.sh_offset,
                                                                  shdr.sh_size)
                 self._rela_array = cast(rela_array_buffer, POINTER(rela_array_memory_class)).contents
             elif section_type == elfenums.SHT.SHT_REL:
                 rel_array_memory_class = self._ElfW_Rel * (shdr.sh_size // sizeof(self._ElfW_Rel))
-                rel_array_buffer = self.__get_c_array_at_offset(shdr.sh_offset,
+                rel_array_buffer = self._get_c_array_at_offset(shdr.sh_offset,
                                                                 shdr.sh_size)
                 self._rel_array = cast(rel_array_buffer, POINTER(rel_array_memory_class)).contents
             elif section_type == elfenums.SHT.SHT_PROGBITS and section_name == '.got':
-                self.got = self.__get_c_array_at_offset(shdr.sh_offset,
+                self.got = self._get_c_array_at_offset(shdr.sh_offset,
                                                         shdr.sh_size)
             elif section_type == elfenums.SHT.SHT_PROGBITS and section_name == '.got.plt':
-                self.got_plt = self.__get_c_array_at_offset(shdr.sh_offset,
+                self.got_plt = self._get_c_array_at_offset(shdr.sh_offset,
                                                         shdr.sh_size)
 
             section_dict = dict(shdr)
