@@ -60,6 +60,10 @@ class ElfParser:
         self.address = 0
         self.got = None
         self.got_plt = None
+        self._load_entries = []
+
+        # alternate strategy for casting from bytes
+        # ehdr = ((Elf32_Ehdr*1).from_buffer(bytearray(f.read(sizeof(Elf32_Ehdr)))))[0]
 
         self._lazy_load = lazy_load
         if self._lazy_load is False:
@@ -264,6 +268,8 @@ class ElfParser:
             phdr_dict['flags'] = phdr_flags
             # self.program_headers.append(elfstructs.Phdr(**phdr_dict))
             self.program_headers.append(phdr_tuple(**phdr_dict))
+            if phdr.p_type == elfenums.PT.PT_LOAD:
+                self._load_entries.append(phdr)
 
     def _parse_dyn_entries(self):
         extra_fields = ['type']
@@ -279,6 +285,17 @@ class ElfParser:
             dyn_dict['type'] = tag_type
             # self.dynamic_entries.append(elfstructs.Dyn(**dyn_dict))
             self.dynamic_entries.append(dyn_tuple(**dyn_dict))
+
+    def offset_to_vaddr(self, offset):
+        for phdr in self._load_entries:
+            if (phdr.p_offset <= offset) and (offset <= phdr.p_offset + phdr.p_filesz):
+                return (offset - phdr.p_offset) + phdr.p_vaddr
+
+    def vaddr_to_offset(self, addr):
+        for phdr in self._load_entries:
+            if (phdr.p_vaddr <= addr) and (addr <= (phdr.p_vaddr + phdr.p_memsz)):
+                return (addr - phdr.p_vaddr) + phdr.p_offset
+
 
     def _get_relocation_enum_for_machine(self):
         """There are lots of different relocation architectures supported,
