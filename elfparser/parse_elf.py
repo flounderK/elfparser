@@ -86,6 +86,7 @@ class ElfParser:
         self._parse_phdrs()
         self._parse_dyn_entries()
         self._parse_rela_entries()
+        self._parse_rel_entries()
 
     @property
     def address(self):
@@ -322,4 +323,20 @@ class ElfParser:
             rela_dict['r_sym'] = rela_sym
             # self.relocation_entries.append(elfstructs.Rela(**rela_dict))
             self.relocation_entries.append(rela_tuple(**rela_dict))
+
+
+    def _parse_rel_entries(self):
+        extra_fields = ['name', 'type']
+        rel_tuple = namedtuple('Rel', extra_fields + list(dict(self._ElfW_Rel._fields_).keys()) + ['r_sym'])
+        for rel in self._rel_array:
+            rel_info = rel.r_info
+            rel_sym = self._constexpr['ELFW_R_SYM'](rel_info)
+            rel_type = self.relocation_enum(self._constexpr['ELFW_R_TYPE'](rel_info))
+            name = string_at_offset(self._dynamic_string_table, self._dyn_sym_array[rel_sym].st_name)
+            rel_dict = dict(rel)
+            rel_dict['name'] = name
+            rel_dict['type'] = rel_type
+            rel_dict['r_sym'] = rel_sym
+            # self.relocation_entries.append(elfstructs.rel(**rel_dict))
+            self.relocation_entries.append(rel_tuple(**rel_dict))
 
