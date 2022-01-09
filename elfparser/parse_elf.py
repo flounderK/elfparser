@@ -55,6 +55,10 @@ class ElfParser:
         self.relocation_entries = []
         self.program_headers = []
         self.needed_libraries = []
+        self._sym_array = []
+        self._dyn_sym_array = []
+        self._rela_array = []
+        self._rel_array = []
         self.dynamic_flags = 0
         self.relocation_enum = None
         self.address = 0
